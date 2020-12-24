@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SoutenancesModule } from './soutenances/soutenances.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,7 +19,7 @@ dotenv.config();
       "dist/**/*.entity{.ts,.js}"
     ],
     synchronize: true,
-  })],
+  }), SoutenancesModule],
   controllers: [AppController],
   providers: [AppService],
 })
