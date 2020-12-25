@@ -1,12 +1,14 @@
 import {
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Timestamp } from '../../generics/timestamps';
+import { Timestamp } from '../generics/timestamps';
+import { Soutenance } from './soutenance.entity';
 
 @Entity('session')
-export class SessionEntity extends Timestamp {
+export class Session extends Timestamp {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,4 +26,7 @@ export class SessionEntity extends Timestamp {
     type: 'date',
   })
   end_date: Date;
+
+  @OneToMany(type => Soutenance, soutenance => soutenance.id)
+  soutenance : Soutenance;
 }
