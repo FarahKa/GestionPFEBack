@@ -1,11 +1,8 @@
+import { PFEStateEnum } from 'src/enums/pfe-state.enum';
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Timestamp } from '../generics/timestamps';
 
@@ -13,5 +10,20 @@ import { Timestamp } from '../generics/timestamps';
 export class PFE extends Timestamp {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    type: 'enum',
+    enum: PFEStateEnum,
+  })
+  state: PFEStateEnum;
+
+  @Column() 
+  subject : string;
+
+  @Column()
+  private : boolean;
+
+  @Column()
+  rapport : string; //link 
 
 }

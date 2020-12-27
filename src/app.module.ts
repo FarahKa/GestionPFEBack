@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SoutenancesModule } from './soutenances/soutenances.module';
+import { PfeController } from './pfes/controllers/pfe/pfe.controller';
+import { PfeService } from './pfes/services/pfe/pfe.service';
+import { PfesModule } from './pfes/pfes.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -19,7 +22,8 @@ dotenv.config();
       "dist/**/*.entity{.ts,.js}"
     ],
     synchronize: true,
-  }), SoutenancesModule],
+    autoLoadEntities: true
+  }), SoutenancesModule, PfesModule],
   controllers: [AppController],
   providers: [AppService],
 })

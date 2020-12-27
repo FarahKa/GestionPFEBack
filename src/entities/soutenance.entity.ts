@@ -1,11 +1,9 @@
 import {
     Column,
-    CreateDateColumn,
-    DeleteDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn,
   } from 'typeorm';
   import { Timestamp } from '../generics/timestamps';
 import { Session } from './session.entity';
@@ -19,8 +17,10 @@ import { Session } from './session.entity';
         type: 'date',
       })
     date: Date;
-
-    @ManyToOne(type => Session, session => session.id)
+    
+// lezem e soutenance tchouf e session ?
+    @ManyToOne(() => Session, session => session.id)
+    @JoinColumn({ name: "sessionId" })
     session : Session;
 
   }

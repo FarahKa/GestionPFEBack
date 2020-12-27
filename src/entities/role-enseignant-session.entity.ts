@@ -1,12 +1,10 @@
 
 import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  Index,
+  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  PrimaryColumn
 } from 'typeorm';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { Enseignant } from './enseignant.entity';
@@ -14,37 +12,32 @@ import { Timestamp } from '../generics/timestamps';
 import { Session } from './session.entity';
 
 @Entity('roleEnseignantSession')
+@Index(["role", "enseignant", "session"], { unique: true })
 export class RoleEnseignantSession extends Timestamp {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({
+  @PrimaryColumn({
       type: 'enum',
       enum: RoleEnseignantEnum,
       default: RoleEnseignantEnum.membre_jury
     }
   )
-  status: RoleEnseignantEnum;
+  role: RoleEnseignantEnum;
 
   @ManyToOne(
-    type => Enseignant,
-    (enseignant) => enseignant.id,
+    () => Enseignant,
     {
-      cascade: ['insert', 'update'],
+      primary: true,
       nullable: false,
-      eager: true
     }
   )
+  @JoinColumn({ name: "enseignantId" })
   enseignant: Enseignant;
 
   @ManyToOne(
-    type => Session,
-    (session) => session.id,
+    () => Session,
     {
-      cascade: ['insert', 'update'],
+      primary: true,
       nullable: false,
-      eager: true
-    }
-  )
+    })
+  @JoinColumn({ name: "sessionId" })
   session: Session;
 }
