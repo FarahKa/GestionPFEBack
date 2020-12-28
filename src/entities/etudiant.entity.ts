@@ -33,10 +33,10 @@ export class Etudiant extends User {
     enum: FiliereEnum,
   })
   filiere: FiliereEnum;
-
+/*
   @OneToOne(() => PFE)
   @JoinColumn({ name: "pfeId" })
-  pfe: PFE;
+  pfe: PFE;*/
 
   @OneToOne(() => Soutenance)
   @JoinColumn({ name: "soutenanceId" })

@@ -3,9 +3,11 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToOne,
     PrimaryGeneratedColumn,
   } from 'typeorm';
   import { Timestamp } from '../generics/timestamps';
+import { PFE } from './pfe.entity';
 import { Session } from './session.entity';
   
   @Entity('soutenance')
@@ -22,5 +24,9 @@ import { Session } from './session.entity';
     @ManyToOne(() => Session, session => session.id)
     @JoinColumn({ name: "sessionId" })
     session : Session;
+
+    @OneToOne(() => PFE)
+    @JoinColumn({ name: "pfeId" })
+    pfe: PFE;
 
   }

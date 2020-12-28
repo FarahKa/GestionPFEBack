@@ -1,13 +1,23 @@
-import { IsNotEmpty, MaxLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, isString } from "class-validator";
 
 /* maybe add search by e names too*/
 export class SearchPFEsDto {
-    subject : string;
-    student_id : string;
-    hosting_enterprise : string;
-    mentor_id : string;
-    keywords : string; //seperated by ; 
-    
-    @IsNotEmpty()
-    include_oldies : boolean;
+    @IsOptional()
+    @IsString()
+    subject: string;
+
+    @IsOptional()
+    student_id: string;
+    @IsOptional()
+    hosting_enterprise: string;
+    @IsOptional()
+    mentor_id: string;
+    @IsOptional()
+    keywords: string; //seperated by ; 
+    @IsOptional()
+    @IsNumber()
+    uni_year: number;
+
+   //@IsNotEmpty() // add l faza hedhi later
+    include_oldies: boolean;
 }

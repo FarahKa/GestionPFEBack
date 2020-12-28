@@ -3,7 +3,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSoutenanceDto } from '../dto/create-soutenance.dto';
 import { Soutenance } from '../../entities/soutenance.entity';
-
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * my dude 3andek getsession w get soutenance by pfeId to do
+ * also fibeli some people get one soutenance date but mayal79ouch ykamlou
+ * so they move the date l nahr e5er
+ * so a3mel a thing ychangi e date
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 @Injectable()
 export class SoutenanceService {
   constructor(

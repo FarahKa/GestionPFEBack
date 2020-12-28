@@ -17,13 +17,19 @@ export class PFE extends Timestamp {
   })
   state: PFEStateEnum;
 
-  @Column() 
-  subject : string;
+  @Column()
+  subject: string;
 
   @Column()
-  private : boolean;
+  private: boolean;
 
   @Column()
-  rapport : string; //link 
+  rapport: string; //link 
+
+  @Column()
+  hosting_enterprise: string;
+
+  @Column({ default: false })
+  valid: boolean;
 
 }
