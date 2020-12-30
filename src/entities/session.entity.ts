@@ -28,5 +28,5 @@ export class Session extends Timestamp {
   end_date: Date;
 
   @OneToMany(() => Soutenance, soutenance => soutenance.id)
-  soutenance : Soutenance;
+  soutenances : Soutenance[];
 }

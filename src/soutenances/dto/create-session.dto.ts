@@ -8,5 +8,4 @@ export class CreateSessionDto {
     start_date : Date;
     @IsNotEmpty()
     end_date : Date;
-
 }

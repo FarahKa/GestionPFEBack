@@ -20,7 +20,7 @@ import { Session } from './session.entity';
       })
     date: Date;
     
-// lezem e soutenance tchouf e session ?
+// lezem e soutenance tchouf e session ? yeaaa just in case we need it
     @ManyToOne(() => Session, session => session.id)
     @JoinColumn({ name: "sessionId" })
     session : Session;
