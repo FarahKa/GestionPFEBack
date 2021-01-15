@@ -4,6 +4,7 @@ import { Etudiant } from 'src/entities/etudiant.entity';
 import { PFE } from 'src/entities/pfe.entity';
 import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
+import { FiliereEnum } from 'src/enums/filere.enum';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { Like, Repository } from 'typeorm';
 
@@ -101,14 +102,18 @@ export class PfeService {
     }
 
 
-    async getPFEsByMentorANDSubjectHostEntOrYear(mentor_id: string, subject: string | undefined, hosting_enterprise: string | undefined, year: number | undefined): Promise<PFE[] | undefined> { //par année universitaire
+    async getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(mentor_id: string, subject: string | undefined, hosting_enterprise: string | undefined, year: number | undefined, filiere: FiliereEnum |undefined): Promise<PFE[] | undefined> { //par année universitaire
         const pfes: PFE[] = []
         if (year) {
+            const where = { "year": { "year": year } }
+            if(filiere){
+                where["filiere"]=filiere
+            }
             return await this.studentRepository.find(
                 {
                     relations: ["soutenance", "soutenance.pfe", "year"],
                     // we can just give partie ml num d 'incri w houwa ytalla3 l possible stuff
-                    where: { "year": { "year": year } }
+                    where: where
                 }
             ).then(async (students) => {
                 const pfes: PFE[] = []

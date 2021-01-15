@@ -42,14 +42,20 @@ export class PfeController {
     }
 
     @Get("pfes_by_mentor_id_subject_host_ent_year")
-    async getPFEsByMentorANDSubjectHostEntOrYear(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
+    async getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
         if (body.mentor_id)
-            return await this.pfeService.getPFEsByMentorANDSubjectHostEntOrYear(body.mentor_id, body.subject, body.hosting_enterprise, body.uni_year)
+            return await this.pfeService.getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(body.mentor_id, body.subject, body.hosting_enterprise, body.uni_year, body.filiere)
         return undefined
     }
 
     @Get("pfes_by_year")
     async getPFEsByYear(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
+        return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
+
+    }
+
+    @Get("pfes_by_filiere")
+    async getPFEsByFiliere(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
         return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
 
     }
