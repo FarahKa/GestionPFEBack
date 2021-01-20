@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +7,8 @@ import { PfeController } from './pfes/controllers/pfe/pfe.controller';
 import { PfeService } from './pfes/services/pfe/pfe.service';
 import { PfesModule } from './pfes/pfes.module';
 import * as dotenv from 'dotenv';
+import * as helmet from 'helmet';
+import { HelmetMiddleware } from '@nest-middlewares/helmet';
 
 dotenv.config();
 
@@ -19,7 +21,8 @@ dotenv.config();
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     entities: [
-      "dist/**/*.entity{.ts,.js}"
+      "dist/**/*.entity{.ts,.js}",
+      "*.entity{.ts,.js}"
     ],
     synchronize: false,
     autoLoadEntities: true
@@ -27,4 +30,8 @@ dotenv.config();
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer : MiddlewareConsumer) : any {
+    consumer.apply(HelmetMiddleware).forRoutes('');
+  }
+}
