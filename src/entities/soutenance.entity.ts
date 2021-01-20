@@ -7,6 +7,7 @@ import {
     PrimaryGeneratedColumn,
   } from 'typeorm';
   import { Timestamp } from '../generics/timestamps';
+import { Etudiant } from './etudiant.entity';
 import { PFE } from './pfe.entity';
 import { Session } from './session.entity';
   
@@ -19,14 +20,18 @@ import { Session } from './session.entity';
         type: 'date',
       })
     date: Date;
-    
-// lezem e soutenance tchouf e session ? yeaaa just in case we need it
+
     @ManyToOne(() => Session, session => session.id)
     @JoinColumn({ name: "sessionId" })
     session : Session;
 
+    @OneToOne(() => Etudiant, etudiant => etudiant.soutenance)
+    etudiant : Etudiant;
+
     @OneToOne(() => PFE)
     @JoinColumn({ name: "pfeId" })
     pfe: PFE;
+
+
 
   }

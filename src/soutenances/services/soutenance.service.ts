@@ -49,7 +49,7 @@ export class SoutenanceService {
     }
 
   findAll(): Promise<Soutenance[]> {
-    return this.soutenanceRepository.find();
+    return this.soutenanceRepository.find({relations : ["pfe", "etudiant"]});
   }
 
   findOne(id: string): Promise<Soutenance> {

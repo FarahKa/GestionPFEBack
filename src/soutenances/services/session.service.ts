@@ -20,7 +20,7 @@ export class SessionService {
   }
 
   findAll(): Promise<Session[]> {
-    return this.sessionRepository.find();
+    return this.sessionRepository.find({relations : ["soutenances"]});
   }
 
   findOne(id: string): Promise<Session> {
