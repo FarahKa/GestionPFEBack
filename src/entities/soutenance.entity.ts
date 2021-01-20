@@ -21,7 +21,7 @@ import { Session } from './session.entity';
       })
     date: Date;
 
-    @ManyToOne(() => Session, session => session.id)
+    @ManyToOne(() => Session, session => session.soutenances)
     @JoinColumn({ name: "sessionId" })
     session : Session;
 
