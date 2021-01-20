@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSoutenanceDto } from '../dto/create-soutenance.dto';
 import { Soutenance } from '../../entities/soutenance.entity';
+import { Session } from 'src/entities/session.entity';
 /**
  * 
  * 
@@ -26,7 +27,9 @@ export class SoutenanceService {
   constructor(
     @InjectRepository(Soutenance)
     private soutenanceRepository: Repository<Soutenance>,
-  ) {}
+    @InjectRepository(Session)
+    private sessionRepository: Repository<Session>,
+    ) {}
 
   
 
@@ -34,6 +37,16 @@ export class SoutenanceService {
 //     const soutenance = this.soutenanceRepository.create(newSoutenance);
 //     return await this.soutenanceRepository.save(soutenance);
 //   }
+
+     async affecterSession(idSession : number, idSoutenance : number): Promise<Soutenance>{
+      let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+      let session = await this.sessionRepository.findOne(idSession);
+
+      soutenance.session = session;
+
+      return await this.soutenanceRepository.save(soutenance)
+
+    }
 
   findAll(): Promise<Soutenance[]> {
     return this.soutenanceRepository.find();
