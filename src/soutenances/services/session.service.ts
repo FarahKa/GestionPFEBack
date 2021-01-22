@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSessionDto } from '../dto/create-session.dto';
 import { Session } from '../../entities/session.entity';
+import { Soutenance } from 'src/entities/soutenance.entity';
+
+
 
 @Injectable()
 export class SessionService {
@@ -12,15 +15,18 @@ export class SessionService {
   ) {}
 
   async createSession(newSession: CreateSessionDto): Promise<Session> {
-    console.log("I gotcha")
-    console.log(newSession)
+    console.log('I gotcha');
+    console.log(newSession);
     const session = this.sessionRepository.create(newSession);
-    console.log(session)
+    console.log(session);
     return await this.sessionRepository.save(session);
   }
 
-  findAll(): Promise<Session[]> {
-    return this.sessionRepository.find({relations : ["soutenances"]});
+  async findAll(): Promise<Session[]> {
+    return this.sessionRepository
+      .find({
+        relations: ['soutenances', 'soutenances.etudiant', 'soutenances.pfe'],
+      })
   }
 
   findOne(id: string): Promise<Session> {
