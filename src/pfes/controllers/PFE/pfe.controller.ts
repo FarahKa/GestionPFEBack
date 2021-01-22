@@ -1,36 +1,62 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { PFE } from 'src/entities/pfe.entity';
 import { SearchPFEsDto } from 'src/pfes/dto/search_pfes.dto';
 import { ValidateInvalidateSubjectDto } from 'src/pfes/dto/validate-invalidate_subject.dto';
 import { AffectSubjectToMentorDto } from 'src/pfes/dto/affect_sub_mentor.dto';
 import { PfeService } from 'src/pfes/services/pfe/pfe.service';
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('pfe')
 export class PfeController {
 
+    /** 
+     * IM REDOING THIS WHOLE THING TO MAKE IT JUST PULL ONCE FROM THE DB AND THE FILTERING WILL BE
+     * DONE FL FRONT 
+     * SO ALL THIS CLASS WILL DO IS GET ML SERVICE E NECESSARY JOINTS
+     */
+
     constructor(private pfeService: PfeService) { }
 
-    @Get("pfe_by_id")
+    @Get("id")
+    async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
+        if (body.pfe_id)
+            return await this.pfeService.get_PFE_by_id(body.pfe_id)
+        return undefined
+    }
+
+    @Get("all")
+    async getPFEs() {
+        return await this.pfeService.get_PFEs_by_year_with_students_teachers(undefined)
+    }
+
+    @Get(":year/all")
+    async getPFEsByYear(@Param('year', new ParseIntPipe()) year) {
+        console.log(year)
+        return await this.pfeService.get_PFEs_by_year_with_students_teachers(year)
+    }
+/*
+    @Get("pfes/etudiants")
     async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
         if (body.pfe_id)
             return await this.pfeService.getPFEById(body.pfe_id)
         return undefined
     }
 
-    @Post("validsate")
+*/
+    @Post("validate")
     async validateSubject(@Body() body: ValidateInvalidateSubjectDto) {
         if (body.pfe_id)
-            return await this.pfeService.validateOrInvalidateSubject(body.pfe_id, true)
+            return await this.pfeService.validate_or_invalidate_subject(body.pfe_id, true)
         return undefined
     }
 
     @Post("invalidate")
     async invalidateSubject(@Body() body: ValidateInvalidateSubjectDto) {
         if (body.pfe_id)
-            return await this.pfeService.validateOrInvalidateSubject(body.pfe_id, false)
+            return await this.pfeService.validate_or_invalidate_subject(body.pfe_id, false)
         return undefined
     }
-
+/*
     @Get("pfes_by_subject_hosting_enterprise_year")
     async getPFEsBySubjectHostOrYear(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE>  
         return await this.pfeService.getPFEsBySubjectHostingEnterpriseOrYear(body.subject, body.hosting_enterprise, body.uni_year)
@@ -65,7 +91,7 @@ export class PfeController {
         if( body.mentor_id && body.pfe_id )
             return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
         return undefined
-    }
+    }*/
 }
 
 /*
