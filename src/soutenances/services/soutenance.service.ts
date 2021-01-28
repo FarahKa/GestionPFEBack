@@ -4,6 +4,10 @@ import { Repository } from 'typeorm';
 import { CreateSoutenanceDto } from '../dto/create-soutenance.dto';
 import { Soutenance } from '../../entities/soutenance.entity';
 import { Session } from 'src/entities/session.entity';
+import { Enseignant } from 'src/entities/enseignant.entity';
+import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
+import { totalmem } from 'os';
+import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 /**
  * 
  * 
@@ -29,7 +33,12 @@ export class SoutenanceService {
     private soutenanceRepository: Repository<Soutenance>,
     @InjectRepository(Session)
     private sessionRepository: Repository<Session>,
+    @InjectRepository(Enseignant)
+    private enseignantRepository: Repository<Enseignant>,
+    @InjectRepository(RoleEnseignantSoutenance)
+    private roleSoutenanceRepository: Repository<RoleEnseignantSoutenance>,
     ) {}
+
 
   
 
@@ -58,5 +67,26 @@ export class SoutenanceService {
 
   async remove(id: string): Promise<void> {
     await this.soutenanceRepository.delete(id);
+  }
+
+  getAllProfessors() : Promise<Enseignant[]> {
+    return this.enseignantRepository.find();
+  }
+
+  async getEncadrant(id) : Promise<Enseignant>{
+  let role = await this.roleSoutenanceRepository.findOne({where : {
+      soutenance : {id:id}
+    },
+    relations: ["enseignant"]
+  })
+  return(role.enseignant)
+  }
+
+  async assignEncadrant(idSoutenance : number, idEnseignant : string) : Promise<RoleEnseignantSoutenance>{
+    let role = new RoleEnseignantSoutenance();
+    role.enseignant = await this.enseignantRepository.findOne(idEnseignant) ;
+    role.soutenance = await this.soutenanceRepository.findOne(idSoutenance) ;
+    role.role = RoleEnseignantEnum.encadrant;
+    return this.roleSoutenanceRepository.save(role);   
   }
 }

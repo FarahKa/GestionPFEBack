@@ -15,10 +15,7 @@ export class SessionService {
   ) {}
 
   async createSession(newSession: CreateSessionDto): Promise<Session> {
-    console.log('I gotcha');
-    console.log(newSession);
     const session = this.sessionRepository.create(newSession);
-    console.log(session);
     return await this.sessionRepository.save(session);
   }
 

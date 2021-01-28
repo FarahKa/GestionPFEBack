@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Enseignant } from 'src/entities/enseignant.entity';
 import { Session } from 'src/entities/session.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
 import { CreateSessionDto } from 'src/soutenances/dto/create-session.dto';
@@ -19,5 +20,21 @@ export class SoutenanceController {
     @Get("all")
     getAll() : Promise<Soutenance[]>{
         return this.soutenanceService.findAll();
+    }
+
+    @Get("allProfessors")
+    getAllProfessors() : Promise<Enseignant[]>{
+        return this.soutenanceService.getAllProfessors();
+    }
+
+    @Get("encadrant/:id")
+    getEncadrant(@Param('id') id: number): Promise<Enseignant>{
+        return this.soutenanceService.getEncadrant(id);
+    }
+
+    @Get("assignEncadrant/:idS/:idEn")
+    assignEncadrant(@Param('idS', new ParseIntPipe()) idSoutenance : number, @Param('idEn') idEnseignant : string) : any {
+        console.warn("in controller")
+        return this.soutenanceService.assignEncadrant(idSoutenance, idEnseignant);
     }
 }
