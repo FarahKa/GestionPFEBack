@@ -8,6 +8,7 @@ import { Enseignant } from 'src/entities/enseignant.entity';
 import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
 import { totalmem } from 'os';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
+import { profile } from 'console';
 /**
  * 
  * 
@@ -89,4 +90,56 @@ export class SoutenanceService {
     role.role = RoleEnseignantEnum.encadrant;
     return this.roleSoutenanceRepository.save(role);   
   }
+
+  async patchSoutenance(idSoutenance: number, data : any) : Promise<Soutenance> {
+    // {
+    //   "session": 2,
+    //   "encadrant": "0750002",
+    //   "jury": [
+    //     "0750005",
+    //     "0750003"
+    //   ],
+    //   "date": "2021-01-08"
+    // }
+    console.warn(data)
+    let soutenance = await this.soutenanceRepository.findOne(idSoutenance)
+    if(data.session && data.session !== ""){
+      console.warn("in session", data.session)
+      let session = await this.sessionRepository.findOne(data.session);
+      soutenance.session = session;
+    }
+
+    //there is still a problem with changing encadrant & jury
+    if(data.encadrant && data.encadrant !== ""){
+      console.warn("in encadrant", data.encadrant)
+      let encadrant = await this.enseignantRepository.findOne(data.encadrant)
+      console.warn(encadrant)
+      console.warn(soutenance)
+      let role = await this.roleSoutenanceRepository.findOne({where:{role: RoleEnseignantEnum.encadrant, soutenance: soutenance}})
+      console.warn(role)
+      role.enseignant = encadrant;
+      this.roleSoutenanceRepository.save(role);
+    }
+    if(data.jury && data.jury !== [] && data.jury !== ""){
+      console.warn("in jury", data.jury)
+      let jury = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance}})
+      jury.forEach((prof)=> {
+        this.roleSoutenanceRepository.delete(prof);
+      })
+      data.jury.forEach(async (profCIN) => {
+          let role = new RoleEnseignantSoutenance();
+          role.enseignant = await this.enseignantRepository.findOne(profCIN)
+          role.soutenance = soutenance;
+          role.role = RoleEnseignantEnum.membre_jury;
+          this.roleSoutenanceRepository.save(role);       
+      })
+    }
+    if(data.date && data.date !== ""){
+      console.warn("in date", data.date)
+      soutenance.date = data.date;
+    }
+    console.log(soutenance)
+    return this.soutenanceRepository.save(soutenance)
+
+  } 
 }
