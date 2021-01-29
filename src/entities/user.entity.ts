@@ -12,4 +12,10 @@ export class User extends Timestamp {
 
     @Column()
     lastname: string;
+
+    @Column()
+    email: string;
+
+    @Column()
+    phoneNumber: number;
 }
