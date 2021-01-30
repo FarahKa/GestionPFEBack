@@ -49,4 +49,9 @@ export class SoutenanceController {
     getRogueSoutenances() : Promise<Soutenance[]>{
         return this.soutenanceService.getRogueSoutenances()
     }
+
+    @Get("jury/:idSoutenance")
+    getJury(@Param('idSoutenance', new ParseIntPipe()) idSoutenance){
+        return this.soutenanceService.getJury(idSoutenance)
+    }
 }

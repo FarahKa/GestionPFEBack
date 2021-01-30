@@ -88,6 +88,18 @@ export class SoutenanceService {
 
   }
 
+  async getJury(idSoutenance) : Promise<Enseignant[]>{
+    let soutenance = await this.soutenanceRepository.findOne(idSoutenance)
+    let juryRoles = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance},  relations: ["enseignant"]})
+    let jury : Enseignant[] = []
+    juryRoles.forEach((jureRole)=> {
+      jury.push(jureRole.enseignant)
+    })
+    return jury
+  }
+
+
+
   async assignEncadrant(idSoutenance : number, idEnseignant : string) : Promise<RoleEnseignantSoutenance>{
     let role = new RoleEnseignantSoutenance();
     role.enseignant = await this.enseignantRepository.findOne(idEnseignant) ;
@@ -104,7 +116,6 @@ export class SoutenanceService {
       soutenance.session = session;
     }
 
-    //there is still a problem with changing encadrant & jury
     if(data.encadrant && data.encadrant !== ""){
       let encadrant = await this.enseignantRepository.findOne(data.encadrant)
       let role = await this.roleSoutenanceRepository.findOne({where:{role: RoleEnseignantEnum.encadrant, soutenance: soutenance}, relations: ["enseignant", "soutenance"]})
@@ -123,9 +134,9 @@ export class SoutenanceService {
       let jury = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance},  relations: ["enseignant", "soutenance"]})
       console.warn("old jury:")
       console.warn(jury)
-      jury.forEach((prof)=> {
-        this.roleSoutenanceRepository.remove(prof);
-      })
+      for(let prof of jury) {
+        await this.roleSoutenanceRepository.remove(prof);
+      }
       data.jury.forEach(async (profCIN) => {
           let role = new RoleEnseignantSoutenance();
           role.enseignant = await this.enseignantRepository.findOne(profCIN)
