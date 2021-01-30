@@ -140,4 +140,12 @@ export class SoutenanceService {
     return this.soutenanceRepository.save(soutenance)
 
   } 
+
+  async getRogueSoutenances() : Promise<Soutenance[]> {
+    let soutenances = await this.soutenanceRepository.find({relations : ["pfe", "etudiant", "session"]});
+    soutenances = soutenances.filter((soutenance) => soutenance.session === null)
+    return(soutenances)
+
+  }
+
 }

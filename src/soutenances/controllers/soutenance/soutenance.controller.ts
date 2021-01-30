@@ -44,4 +44,9 @@ export class SoutenanceController {
         console.warn(idSoutenance, soutenance)
         return this.soutenanceService.patchSoutenance(idSoutenance, soutenance);
     }
+
+    @Get("rogue")
+    getRogueSoutenances() : Promise<Soutenance[]>{
+        return this.soutenanceService.getRogueSoutenances()
+    }
 }

@@ -17,7 +17,7 @@ import { Session } from './session.entity';
     id: number;
 
     @Column({
-        type: 'date',
+        type: 'timestamp',
       })
     date: Date;
 
