@@ -76,11 +76,16 @@ export class SoutenanceService {
 
   async getEncadrant(id) : Promise<Enseignant>{
   let role = await this.roleSoutenanceRepository.findOne({where : {
-      soutenance : {id:id}
+      soutenance : {id:id}, role: RoleEnseignantEnum.encadrant
     },
     relations: ["enseignant"]
   })
-  return(role.enseignant)
+  if(role){
+      return(role.enseignant)
+  } else {
+    return null
+  }
+
   }
 
   async assignEncadrant(idSoutenance : number, idEnseignant : string) : Promise<RoleEnseignantSoutenance>{
@@ -92,53 +97,46 @@ export class SoutenanceService {
   }
 
   async patchSoutenance(idSoutenance: number, data : any) : Promise<Soutenance> {
-    // {
-    //   "session": 2,
-    //   "encadrant": "0750002",
-    //   "jury": [
-    //     "0750005",
-    //     "0750003"
-    //   ],
-    //   "date": "2021-01-08"
-    // }
-    console.warn(data)
+
     let soutenance = await this.soutenanceRepository.findOne(idSoutenance)
     if(data.session && data.session !== ""){
-      console.warn("in session", data.session)
       let session = await this.sessionRepository.findOne(data.session);
       soutenance.session = session;
     }
 
     //there is still a problem with changing encadrant & jury
     if(data.encadrant && data.encadrant !== ""){
-      console.warn("in encadrant", data.encadrant)
       let encadrant = await this.enseignantRepository.findOne(data.encadrant)
-      console.warn(encadrant)
-      console.warn(soutenance)
-      let role = await this.roleSoutenanceRepository.findOne({where:{role: RoleEnseignantEnum.encadrant, soutenance: soutenance}})
-      console.warn(role)
+      let role = await this.roleSoutenanceRepository.findOne({where:{role: RoleEnseignantEnum.encadrant, soutenance: soutenance}, relations: ["enseignant", "soutenance"]})
+      if(!role){
+        console.log("there is no encadrant)")
+      } else {
+        this.roleSoutenanceRepository.remove(role);
+      }
+      role = new RoleEnseignantSoutenance();
+      role.role = RoleEnseignantEnum.encadrant;
+      role.soutenance = soutenance;
       role.enseignant = encadrant;
-      this.roleSoutenanceRepository.save(role);
+      await this.roleSoutenanceRepository.save(role);
     }
     if(data.jury && data.jury !== [] && data.jury !== ""){
-      console.warn("in jury", data.jury)
-      let jury = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance}})
+      let jury = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance},  relations: ["enseignant", "soutenance"]})
+      console.warn("old jury:")
+      console.warn(jury)
       jury.forEach((prof)=> {
-        this.roleSoutenanceRepository.delete(prof);
+        this.roleSoutenanceRepository.remove(prof);
       })
       data.jury.forEach(async (profCIN) => {
           let role = new RoleEnseignantSoutenance();
           role.enseignant = await this.enseignantRepository.findOne(profCIN)
           role.soutenance = soutenance;
           role.role = RoleEnseignantEnum.membre_jury;
-          this.roleSoutenanceRepository.save(role);       
+          await this.roleSoutenanceRepository.save(role);       
       })
     }
     if(data.date && data.date !== ""){
-      console.warn("in date", data.date)
       soutenance.date = data.date;
     }
-    console.log(soutenance)
     return this.soutenanceRepository.save(soutenance)
 
   } 
