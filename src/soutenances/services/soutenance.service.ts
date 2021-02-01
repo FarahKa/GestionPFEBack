@@ -122,7 +122,7 @@ export class SoutenanceService {
       if(!role){
         console.log("there is no encadrant)")
       } else {
-        this.roleSoutenanceRepository.remove(role);
+         await this.roleSoutenanceRepository.remove(role);
       }
       role = new RoleEnseignantSoutenance();
       role.role = RoleEnseignantEnum.encadrant;
