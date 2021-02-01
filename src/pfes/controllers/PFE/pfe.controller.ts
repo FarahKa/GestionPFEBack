@@ -5,6 +5,8 @@ import { ValidateInvalidateSubjectDto } from 'src/pfes/dto/validate-invalidate_s
 import { AffectSubjectToMentorDto } from 'src/pfes/dto/affect_sub_mentor.dto';
 import { PfeService } from 'src/pfes/services/pfe/pfe.service';
 import { ParseIntPipe } from '@nestjs/common';
+import { CreatePFEDto } from 'src/pfes/dto/create_pfe.dto';
+import { identity } from 'rxjs';
 
 @Controller('pfe')
 export class PfeController {
@@ -17,11 +19,18 @@ export class PfeController {
 
     constructor(private pfeService: PfeService) { }
 
-    @Get("id")
-    async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
-        if (body.pfe_id)
-            return await this.pfeService.get_PFE_by_id(body.pfe_id)
+    @Post("create")
+    async postPFE(@Body() body: CreatePFEDto): Promise<PFE | void | undefined> {
+        console.log("here")
+        if (body.student_id)
+            return await this.pfeService.create_PFE(body.student_id)
         return undefined
+    }
+
+    @Get(":id")
+    async getPFEById(@Param('id', new ParseIntPipe()) id): Promise<PFE | undefined> {
+        console.log(id)
+        return await this.pfeService.get_PFE_by_id(id)
     }
 
     @Get("all")
@@ -34,15 +43,15 @@ export class PfeController {
         console.log(year)
         return await this.pfeService.get_PFEs_by_year_with_students_teachers(year)
     }
-/*
-    @Get("pfes/etudiants")
-    async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
-        if (body.pfe_id)
-            return await this.pfeService.getPFEById(body.pfe_id)
-        return undefined
-    }
-
-*/
+    /*
+        @Get("pfes/etudiants")
+        async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
+            if (body.pfe_id)
+                return await this.pfeService.getPFEById(body.pfe_id)
+            return undefined
+        }
+    
+    */
     @Post("validate")
     async validateSubject(@Body() body: ValidateInvalidateSubjectDto) {
         if (body.pfe_id)
@@ -56,42 +65,42 @@ export class PfeController {
             return await this.pfeService.validate_or_invalidate_subject(body.pfe_id, false)
         return undefined
     }
-/*
-    @Get("pfes_by_subject_hosting_enterprise_year")
-    async getPFEsBySubjectHostOrYear(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE>  
-        return await this.pfeService.getPFEsBySubjectHostingEnterpriseOrYear(body.subject, body.hosting_enterprise, body.uni_year)
-    }
-
-    @Get("pfes_by_student_id_year")
-    async getPFEsByStudentId(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(body.student_id, body.uni_year)
-    }
-
-    @Get("pfes_by_mentor_id_subject_host_ent_year")
-    async getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
-        if (body.mentor_id)
-            return await this.pfeService.getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(body.mentor_id, body.subject, body.hosting_enterprise, body.uni_year, body.filiere)
-        return undefined
-    }
-
-    @Get("pfes_by_year")
-    async getPFEsByYear(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
-
-    }
-
-    @Get("pfes_by_filiere")
-    async getPFEsByFiliere(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
-
-    }
-
-    @Post("affect_subject_to_mentor")
-    async affectSubjectToMentor(@Body() body: AffectSubjectToMentorDto){
-        if( body.mentor_id && body.pfe_id )
-            return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
-        return undefined
-    }*/
+    /*
+        @Get("pfes_by_subject_hosting_enterprise_year")
+        async getPFEsBySubjectHostOrYear(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE>  
+            return await this.pfeService.getPFEsBySubjectHostingEnterpriseOrYear(body.subject, body.hosting_enterprise, body.uni_year)
+        }
+    
+        @Get("pfes_by_student_id_year")
+        async getPFEsByStudentId(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
+            return await this.pfeService.getPFEsByStudentIDOrYear(body.student_id, body.uni_year)
+        }
+    
+        @Get("pfes_by_mentor_id_subject_host_ent_year")
+        async getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
+            if (body.mentor_id)
+                return await this.pfeService.getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(body.mentor_id, body.subject, body.hosting_enterprise, body.uni_year, body.filiere)
+            return undefined
+        }
+    
+        @Get("pfes_by_year")
+        async getPFEsByYear(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
+            return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
+    
+        }
+    
+        @Get("pfes_by_filiere")
+        async getPFEsByFiliere(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
+            return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
+    
+        }
+    
+        @Post("affect_subject_to_mentor")
+        async affectSubjectToMentor(@Body() body: AffectSubjectToMentorDto){
+            if( body.mentor_id && body.pfe_id )
+                return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
+            return undefined
+        }*/
 }
 
 /*

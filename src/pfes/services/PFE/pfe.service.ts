@@ -5,6 +5,7 @@ import { PFE } from 'src/entities/pfe.entity';
 import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
+import { PFEStateEnum } from 'src/enums/pfe-state.enum';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { Like, Repository } from 'typeorm';
 
@@ -39,8 +40,36 @@ export class PfeService {
         @InjectRepository(Soutenance) private soutenanceRepository: Repository<Soutenance>
     ) { }
 
-    async get_PFE_by_id(pfe_id: number) {
-        return await this.pfeRepository.findOne(pfe_id)
+
+   /* async insert(userDetails: CreateUserDto): Promise<UserEntity> {
+        const userEntity: UserEntity = UserEntity.create();
+        const {name } = userDetails;
+        userEntity.name = name;
+        await UserEntity.save(userEntity);
+        return userEntity;
+      }
+*/
+    async create_PFE(student_id: string): Promise<PFE | void>{
+        //first create an empty pfe
+        //then create an empty soutenance w assign l pfe to it
+        //then assign l pfe ll student 
+        const pfeEntity: PFE = this.pfeRepository.create();
+        // set up e defaults
+        pfeEntity.private= false
+        pfeEntity.state =  PFEStateEnum.s1;
+        pfeEntity.hosting_enterprise=""
+        pfeEntity.subject=""
+        pfeEntity.valid=false
+        await this.pfeRepository.save(pfeEntity)
+                                .then((data)=>{
+                                    console.log(data)
+                                })
+    
+        //return await this.pfeRepository
+    }
+
+    async delete_PFE(pfe_id: string): Promise<void> {
+        await this.pfeRepository.delete(pfe_id);
     }
 
     async validate_or_invalidate_subject(pfe_id: number, validate: boolean): Promise<boolean | undefined> { //par année universitaire
@@ -49,12 +78,16 @@ export class PfeService {
             { "valid": validate }
         ).then((data) => { return true })
     }
-    
+
+    async get_PFE_by_id(pfe_id: number) {
+        return await this.pfeRepository.findOne({id: pfe_id})
+    }
+
     //if you want to get all pfes then just pass nothing as a parameter
-    async get_PFEs_by_year_with_students_teachers(year: number| undefined) {
-        const where= {}
-        if(year)
-            where["year"]= { "year": year } 
+    async get_PFEs_by_year_with_students_teachers(year: number | undefined) {
+        const where = {}
+        if (year)
+            where["year"] = { "year": year }
         return await this.studentRepository.find(
             {
                 relations: ["soutenance", "soutenance.pfe", "year"],
@@ -94,11 +127,11 @@ export class PfeService {
                         console.log("PROFs :")
                         console.log(profs)
                         students[index].soutenance["encadrants"] = profs.map(p => p.enseignant)
-                        students[index].soutenance["encadrants"].forEach(function(p){
-                                delete p.createdAt
-                                delete p.updatedAt
-                                delete p.deletedAt
-                            })
+                        students[index].soutenance["encadrants"].forEach(function (p) {
+                            delete p.createdAt
+                            delete p.updatedAt
+                            delete p.deletedAt
+                        })
                     })
                 }
             }
@@ -144,18 +177,15 @@ export class PfeService {
             }
         }
         */
-    //not actual id. numero d'inscri
-    async getPFEsByStudentIDOrYear(student_id: string | undefined, uni_year: number | undefined): Promise<PFE[] | undefined> { //par année universitaire
+    // not actual id. numero d'inscri
+    // returns tableau mt3 all pfes mt3 l etudiant heka (in case mdoubel he's gonna have more than one pfe)
+    async getPFEsByStudentID(student_id: string | undefined): Promise<PFE[] | undefined> {
+        if (!student_id)
+            return undefined
         const where = {}
         const relations = ["soutenance", "soutenance.pfe"]
-        if (student_id)
-            where["student_id_number"] = Like("%" + student_id + "%");
-        if (uni_year) {
-            where["year"] = { "year": uni_year }
-            relations.push("year")
-        }
-        if (!uni_year && !student_id)
-            return undefined
+        where["student_id_number"] = Like("%" + student_id + "%");
+        
         return await this.studentRepository.find(
             {
                 relations: relations,

@@ -29,27 +29,41 @@ export class SoutenanceService {
     private soutenanceRepository: Repository<Soutenance>,
     @InjectRepository(Session)
     private sessionRepository: Repository<Session>,
-    ) {}
+  ) { }
 
-  
 
-//   async createSoutenance(newSoutenance: CreateSoutenanceDto): Promise<Soutenance> {
-//     const soutenance = this.soutenanceRepository.create(newSoutenance);
-//     return await this.soutenanceRepository.save(soutenance);
-//   }
 
-     async affecterSession(idSession : number, idSoutenance : number): Promise<Soutenance>{
-      let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
-      let session = await this.sessionRepository.findOne(idSession);
+  //   async createSoutenance(newSoutenance: CreateSoutenanceDto): Promise<Soutenance> {
+  //     const soutenance = this.soutenanceRepository.create(newSoutenance);
+  //     return await this.soutenanceRepository.save(soutenance);
+  //   }
+/*
+  async createSoutenance(){
+    const pfeEntity: PFE = this.pfeRepository.create();
+        // set up e defaults
+        pfeEntity.private= false
+        pfeEntity.state =  PFEStateEnum.s1;
+        pfeEntity.hosting_enterprise=""
+        pfeEntity.subject=""
+        pfeEntity.valid=false
+        await this.pfeRepository.save(pfeEntity)
+                                .then((data)=>{
+                                    console.log(data)
+                                })
+  }
+*/
+  async affecterSession(idSession: number, idSoutenance: number): Promise<Soutenance> {
+    const soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+    const session = await this.sessionRepository.findOne(idSession);
 
-      soutenance.session = session;
+    soutenance.session = session;
 
-      return await this.soutenanceRepository.save(soutenance)
+    return await this.soutenanceRepository.save(soutenance)
 
-    }
+  }
 
   findAll(): Promise<Soutenance[]> {
-    return this.soutenanceRepository.find({relations : ["pfe", "etudiant", "session"]});
+    return this.soutenanceRepository.find({ relations: ["pfe", "etudiant", "session"] });
   }
 
   findOne(id: string): Promise<Soutenance> {
