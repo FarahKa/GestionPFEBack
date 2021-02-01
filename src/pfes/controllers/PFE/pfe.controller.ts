@@ -13,9 +13,12 @@ import { UpdatePFEDto } from 'src/pfes/dto/update_pfe.dto';
 export class PfeController {
 
     /** 
-     * IM REDOING THIS WHOLE THING TO MAKE IT JUST PULL ONCE FROM THE DB AND THE FILTERING WILL BE
-     * DONE FL FRONT 
-     * SO ALL THIS CLASS WILL DO IS GET ML SERVICE E NECESSARY JOINTS
+     * if you need anything 9oulouli eni w ill do it 
+     * dont do it yourselves
+     * 
+     * 
+     * 
+     * ne9esni add w remove mentor to pfe 
      */
 
     constructor(private pfeService: PfeService) { }
@@ -73,7 +76,7 @@ export class PfeController {
     async getPFEsByEncadrantID(@Param('year', new ParseIntPipe()) year, @Param("encadrant_id", new ParseIntPipe()) encadrant_id){
         return await this.pfeService.getPFEsByMentor(year, encadrant_id)
     }
-    /*
+/*
         @Post("affect_subject_to_mentor")
         async affectSubjectToMentor(@Body() body: AffectSubjectToMentorDto){
             if( body.mentor_id && body.pfe_id )
