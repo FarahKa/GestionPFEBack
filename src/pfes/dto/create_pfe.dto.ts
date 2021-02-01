@@ -2,5 +2,5 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, isString } from "cl
 
 export class CreatePFEDto {
     @IsNotEmpty()
-    student_id: string;
+    student_id: number;
 }

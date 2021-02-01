@@ -3,12 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SoutenancesModule } from './soutenances/soutenances.module';
-import { PfeController } from './pfes/controllers/pfe/pfe.controller';
-import { PfeService } from './pfes/services/pfe/pfe.service';
 import { PfesModule } from './pfes/pfes.module';
 import * as dotenv from 'dotenv';
 import * as helmet from 'helmet';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
+import { EtudiantsModule } from './etudiants/etudiants.module';
 
 dotenv.config();
 
@@ -26,7 +25,7 @@ dotenv.config();
     ],
     synchronize: false,
     autoLoadEntities: true
-  }), SoutenancesModule, PfesModule],
+  }), SoutenancesModule, PfesModule, EtudiantsModule],
   controllers: [AppController],
   providers: [AppService],
 })

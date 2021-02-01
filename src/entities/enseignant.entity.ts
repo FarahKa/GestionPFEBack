@@ -1,3 +1,4 @@
+import { DepEnum } from 'src/enums/departement.enum';
 import {
   ChildEntity,
   Column,
@@ -15,4 +16,9 @@ import { User } from './user.entity';
 
 @Entity('enseignant')
 export class Enseignant extends User{
+  @Column({
+    type: 'enum',
+    enum: DepEnum,
+  })
+  departement: DepEnum;
 }

@@ -4,6 +4,12 @@ import { Repository } from 'typeorm';
 import { CreateSoutenanceDto } from '../dto/create-soutenance.dto';
 import { Soutenance } from '../../entities/soutenance.entity';
 import { Session } from 'src/entities/session.entity';
+import { Enseignant } from 'src/entities/enseignant.entity';
+import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
+import { totalmem } from 'os';
+import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
+import { profile } from 'console';
+import { PFE } from 'src/entities/pfe.entity';
 /**
  * 
  * 
@@ -29,7 +35,13 @@ export class SoutenanceService {
     private soutenanceRepository: Repository<Soutenance>,
     @InjectRepository(Session)
     private sessionRepository: Repository<Session>,
+    @InjectRepository(Enseignant)
+    private enseignantRepository: Repository<Enseignant>,
+    @InjectRepository(RoleEnseignantSoutenance)
+    private roleSoutenanceRepository: Repository<RoleEnseignantSoutenance>,
   ) { }
+
+
 
 
 
@@ -37,21 +49,20 @@ export class SoutenanceService {
   //     const soutenance = this.soutenanceRepository.create(newSoutenance);
   //     return await this.soutenanceRepository.save(soutenance);
   //   }
-/*
-  async createSoutenance(){
-    const pfeEntity: PFE = this.pfeRepository.create();
-        // set up e defaults
-        pfeEntity.private= false
-        pfeEntity.state =  PFEStateEnum.s1;
-        pfeEntity.hosting_enterprise=""
-        pfeEntity.subject=""
-        pfeEntity.valid=false
-        await this.pfeRepository.save(pfeEntity)
-                                .then((data)=>{
-                                    console.log(data)
-                                })
+
+  async createSoutenance(pfe: PFE) {
+    const soutenanceEntity: Soutenance = this.soutenanceRepository.create();
+    // set up e defaults
+    soutenanceEntity.pfe = pfe
+    return await this.soutenanceRepository.save(soutenanceEntity)
+      .then((data) => {
+        console.log("------------------------------------------")
+        console.log(data)
+        console.log("------------------------------------------")
+        return data
+      })
   }
-*/
+
   async affecterSession(idSession: number, idSoutenance: number): Promise<Soutenance> {
     const soutenance = await this.soutenanceRepository.findOne(idSoutenance);
     const session = await this.sessionRepository.findOne(idSession);
@@ -73,4 +84,95 @@ export class SoutenanceService {
   async remove(id: string): Promise<void> {
     await this.soutenanceRepository.delete(id);
   }
+
+  getAllProfessors(): Promise<Enseignant[]> {
+    return this.enseignantRepository.find();
+  }
+
+  async getEncadrant(id): Promise<Enseignant> {
+    const role = await this.roleSoutenanceRepository.findOne({
+      where: {
+        soutenance: { id: id }, role: RoleEnseignantEnum.encadrant
+      },
+      relations: ["enseignant"]
+    })
+    if (role) {
+      return (role.enseignant)
+    } else {
+      return null
+    }
+
+  }
+
+  async getJury(idSoutenance): Promise<Enseignant[]> {
+    const soutenance = await this.soutenanceRepository.findOne(idSoutenance)
+    const juryRoles = await this.roleSoutenanceRepository.find({ where: { role: RoleEnseignantEnum.membre_jury, soutenance: soutenance }, relations: ["enseignant"] })
+    const jury: Enseignant[] = []
+    juryRoles.forEach((jureRole) => {
+      jury.push(jureRole.enseignant)
+    })
+    return jury
+  }
+
+
+
+  async assignEncadrant(idSoutenance: number, idEnseignant: string): Promise<RoleEnseignantSoutenance> {
+    const role = new RoleEnseignantSoutenance();
+    role.enseignant = await this.enseignantRepository.findOne(idEnseignant);
+    role.soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+    role.role = RoleEnseignantEnum.encadrant;
+    return this.roleSoutenanceRepository.save(role);
+  }
+
+  async patchSoutenance(idSoutenance: number, data: any): Promise<Soutenance> {
+
+    const soutenance = await this.soutenanceRepository.findOne(idSoutenance)
+    if (data.session && data.session !== "") {
+      const session = await this.sessionRepository.findOne(data.session);
+      soutenance.session = session;
+    }
+
+    if (data.encadrant && data.encadrant !== "") {
+      const encadrant = await this.enseignantRepository.findOne(data.encadrant)
+      let role = await this.roleSoutenanceRepository.findOne({ where: { role: RoleEnseignantEnum.encadrant, soutenance: soutenance }, relations: ["enseignant", "soutenance"] })
+      if (!role) {
+        console.log("there is no encadrant)")
+      } else {
+        await this.roleSoutenanceRepository.remove(role);
+      }
+      role = new RoleEnseignantSoutenance();
+      role.role = RoleEnseignantEnum.encadrant;
+      role.soutenance = soutenance;
+      role.enseignant = encadrant;
+      await this.roleSoutenanceRepository.save(role);
+    }
+    if (data.jury && data.jury !== [] && data.jury !== "") {
+      const jury = await this.roleSoutenanceRepository.find({ where: { role: RoleEnseignantEnum.membre_jury, soutenance: soutenance }, relations: ["enseignant", "soutenance"] })
+      console.warn("old jury:")
+      console.warn(jury)
+      for (const prof of jury) {
+        await this.roleSoutenanceRepository.remove(prof);
+      }
+      data.jury.forEach(async (profCIN) => {
+        const role = new RoleEnseignantSoutenance();
+        role.enseignant = await this.enseignantRepository.findOne(profCIN)
+        role.soutenance = soutenance;
+        role.role = RoleEnseignantEnum.membre_jury;
+        await this.roleSoutenanceRepository.save(role);
+      })
+    }
+    if (data.date && data.date !== "") {
+      soutenance.date = data.date;
+    }
+    return this.soutenanceRepository.save(soutenance)
+
+  }
+
+  async getRogueSoutenances(): Promise<Soutenance[]> {
+    let soutenances = await this.soutenanceRepository.find({ relations: ["pfe", "etudiant", "session"] });
+    soutenances = soutenances.filter((soutenance) => soutenance.session === null)
+    return (soutenances)
+
+  }
+
 }

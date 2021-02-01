@@ -6,14 +6,18 @@ import { Session } from '../entities/session.entity';
 import { SessionService } from './services/session.service';
 import { SoutenanceService } from './services/soutenance.service';
 import { Soutenance } from 'src/entities/soutenance.entity';
+import { Enseignant } from 'src/entities/enseignant.entity';
+import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
+import { RoleEnseignantSession } from 'src/entities/role-enseignant-session.entity';
 
 @Module({
   controllers: [SessionController, SoutenanceController],
   providers: [SessionService, SoutenanceService],
   imports: [
     TypeOrmModule.forFeature([
-      Session, Soutenance
+      Session, Soutenance, Enseignant, RoleEnseignantSoutenance, RoleEnseignantSession
     ])
-  ]
+  ],
+  exports: [ SoutenanceService ]
 })
 export class SoutenancesModule {}

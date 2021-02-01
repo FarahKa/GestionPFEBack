@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { CreateSessionDto } from 'src/soutenances/dto/create-session.dto';
 import { Session } from 'src/entities/session.entity';
 import { SessionService } from 'src/soutenances/services/session.service';
+import { PatchSessionDto } from 'src/soutenances/dto/patch-session.dto';
+import { Enseignant } from 'src/entities/enseignant.entity';
 
 @Controller('session')
 export class SessionController {
@@ -15,5 +17,16 @@ export class SessionController {
     @Get("all")
     getAll() : Promise<Session[]>{
         return this.sessionService.findAll();
+    }
+
+    @Post("patchSession/:idSession")
+    patchSoutenance(@Param('idSession', new ParseIntPipe()) idSession : number, @Body() session : PatchSessionDto): Promise<Session>{
+        console.log(session)
+        return this.sessionService.patchSession(idSession, session);
+    }
+
+    @Get("president/:idSession")
+    getPresident(@Param('idSession', new ParseIntPipe()) idS) : Promise<Enseignant>{
+     return this.sessionService.getPresident(idS);   
     }
 }
