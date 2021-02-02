@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import * as helmet from 'helmet';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { EtudiantsModule } from './etudiants/etudiants.module';
+import { AuthModule } from './auth/auth.module';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ dotenv.config();
     ],
     synchronize: false,
     autoLoadEntities: true
-  }), SoutenancesModule, PfesModule, EtudiantsModule],
+  }), SoutenancesModule, PfesModule, EtudiantsModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
