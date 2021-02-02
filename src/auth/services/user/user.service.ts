@@ -43,10 +43,10 @@ export class UserService {
                 }     
               const newUser = this.userRepository.create();
               newUser.cin = user.cin;
-              newUser.firstname = user.firstname;
-              newUser.lastname = user.lastname;
+            //   newUser.firstname = user.firstname;
+            //   newUser.lastname = user.lastname;
               newUser.email = user.email;
-              newUser.phoneNumber = user.phoneNumber;
+            //   newUser.phoneNumber = user.phoneNumber;
               newUser.password=user.password; 
               newUser.role=user.role;
               

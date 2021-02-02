@@ -11,16 +11,7 @@ export class User extends Timestamp {
     cin: string;
 
     @Column()
-    firstname: string;
-
-    @Column()
-    lastname: string;
-
-    @Column()
     email: string;
-
-    @Column()
-    phoneNumber: number;
     
     @BeforeInsert()
     hashPassword() {

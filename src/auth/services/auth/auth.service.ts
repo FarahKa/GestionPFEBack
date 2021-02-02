@@ -5,13 +5,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from  '@nestjs/jwt';
 import { UserService } from  '../user/user.service';
 import * as crypto from 'crypto';
+import { Role } from 'src/enums/role.enum';
 
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+
     ) { }
 
     private async validate(userData: LoginUserDto): Promise<User> {
@@ -37,14 +39,34 @@ export class AuthService {
 
           let payload = `${userData.email}${userData.cin}`;
           const accessToken = this.jwtService.sign(payload);
+          //started making u bech nraj3ou howa, just gotta find el entity lo5ra suivant el usertype
+         let u : any = {
+            token: accessToken,
+            cin: userData.cin,
+            email: userData.email,
+            role: userData.role,
+         }
+        //  switch (userData.role){
+        //      case Role.Student : {
+        //         //get el studentRepository w find bel CIN mta3 el user
+        //          //remarque: fel student kahaw: el primary key composite (cin, anneescolaire) donc a3mel findOne({ where: {cin : userData.cin}})
+        //          // mouch find(userData.cin) 5ater it wont work :)
+        //          //put fel u el infosyou wanna get back mel o
 
+        //         break;
+        //      }
+        //     //do other cases, admin w enseignant
+
+        //  }
+
+        //return el u
           return {
              token: accessToken,
              cin: userData.cin,
              email: userData.email,
-             firstname: userData.firstname,
-             lastname: userData.lastname,
-             phoneNumber:userData.phoneNumber,
+            //  firstname: userData.firstname,
+            //  lastname: userData.lastname,
+            //  phoneNumber:userData.phoneNumber,
              role:userData.role
 
           };

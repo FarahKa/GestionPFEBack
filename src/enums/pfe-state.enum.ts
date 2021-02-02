@@ -1,4 +1,5 @@
 export enum PFEStateEnum{
-    's1' = "state 1",
-    's2' = "state 2"
+    's1' = "non validé",
+    's2' = "validé",
+    's3' = "archivé"
 }

@@ -15,8 +15,8 @@ import {
 import { Timestamp } from '../generics/timestamps';
 import { User } from './user.entity';
 
-@Entity('enseignant')
-export class Enseignant{
+@Entity('admin')
+export class Admin{
 
     @PrimaryColumn()
     @OneToOne(() => User)
@@ -31,10 +31,4 @@ export class Enseignant{
   
     @Column()
       phoneNumber: number;
-
-    @Column({
-      type: 'enum',
-      enum: DepEnum,
-    })
-    departement: DepEnum;
 }

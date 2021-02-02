@@ -24,7 +24,7 @@ dotenv.config();
       "dist/**/*.entity{.ts,.js}",
       "*.entity{.ts,.js}"
     ],
-    synchronize: false,
+    synchronize: true,
     autoLoadEntities: true
   }), SoutenancesModule, PfesModule, EtudiantsModule, AuthModule],
   controllers: [AppController],

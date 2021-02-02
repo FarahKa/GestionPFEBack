@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
 import { AnneeScolaire } from './annee-scolaire.entity';
 import { User } from './user.entity';
@@ -16,6 +17,21 @@ import { FiliereEnum } from '../enums/filere.enum'
 @Entity('etudiant')
 @Index(["cin", "year"], { unique: true })
 export class Etudiant extends User {
+
+  //@PrimaryColumn()
+  @OneToOne(() => User)
+  @JoinColumn({ name: "cin" })
+  cin: string;
+
+  @Column()
+  firstname: string;
+
+  @Column()
+  lastname: string;
+
+  @Column()
+    phoneNumber: number;
+
   @ManyToOne(() => AnneeScolaire,
     year => year.year,
     {
