@@ -21,6 +21,7 @@ export class Etudiant extends User {
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "year" })
   year: AnneeScolaire;

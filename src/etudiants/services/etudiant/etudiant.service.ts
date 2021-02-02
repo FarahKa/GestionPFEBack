@@ -5,6 +5,7 @@ import { Etudiant } from 'src/entities/etudiant.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
 import { CreateEtudiantDto } from 'src/etudiants/dto/createEtudiantDto';
+import { UpdateEtudiantDto } from 'src/etudiants/dto/updateEtudiantDto';
 import { Like, Repository } from 'typeorm';
 @Injectable()
 export class EtudiantService {
@@ -21,15 +22,13 @@ export class EtudiantService {
     ) {}
 
     async get_etudiant_by_id(student_id_number: number): Promise<Etudiant> {
-        const relations = ["etudiant.year", "annee_scolaire.year"]
-        return await this.etudiantRepository.findOne({student_id_number: student_id_number});
+
+        const etudiant = await this.etudiantRepository.findOne({student_id_number: student_id_number});
+        return etudiant;
+
     }
 
     async create_etudiant(etudiant: CreateEtudiantDto) {
-        /*let year = new AnneeScolaireModel(etudiant.year);
-        let newEtudiant = new EtudiantModel(etudiant.cin, etudiant.firstname,
-            etudiant.lastname,etudiant.email,etudiant.phoneNumber, year, etudiant.student_id_number, etudiant.filiere);
-        */
         const newEtudiant = this.etudiantRepository.create();
         let annee = await this.AnneeScolaireRepository.findOne({year: etudiant.year});
         newEtudiant.year = annee;
@@ -43,38 +42,33 @@ export class EtudiantService {
         return await this.etudiantRepository.save(newEtudiant)
     }
 
-    async update_etudiant(student_id_number: number,idSoutenance : number): Promise<Etudiant>{
-        let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
-        let etudiant =  await this.get_etudiant_by_id(student_id_number);
+    async update_etudiant(student_id_number: number, idSoutenance: number): Promise<Etudiant>{
+        let etudiant =  await this.etudiantRepository.findOne({
+            student_id_number: student_id_number
+            });
+        let soutenance = await this.soutenanceRepository.findOne({id: idSoutenance});
         etudiant.soutenance = soutenance;
-        return await this.etudiantRepository.save(etudiant);}
+        return this.etudiantRepository.save(etudiant);
+    }
 
     async delete_etudiant_by_id(student_id_number: number): Promise<void> {
         await this.etudiantRepository.delete(student_id_number);
     }
     async get_all_etudiants(): Promise<Etudiant[]> {
-        return this.etudiantRepository.find({});
+        return this.etudiantRepository.find();
     }
-/*
+
     async get_etudiant_by_filiere(filiere: FiliereEnum): Promise<Etudiant[]> {
-        const where = {}
-        where["filiere"] = Like("%" + filiere + "% ");
-        return this.etudiantRepository.find({where: where});
+        return this.etudiantRepository.find({filiere: filiere});
 
     }
 
     async get_etudiant_by_soutenance_id(soutenance_id: number): Promise<Etudiant> {
-        const where = {};
-        const relations = ["etudiant", "etudiant.soutenance","soutenance"];
-        where["sessionId"] = Like("%" + soutenance_id + "%");
-        return this.etudiantRepository.findOne(
-            {
-                relations: relations,
-                where: where
-            }
-        );   
+        
+        let soutenance = await this.soutenanceRepository.findOne({id: soutenance_id});
+        return this.etudiantRepository.findOne({soutenance: soutenance});   
     }
     
-*/    
+  
 }
 

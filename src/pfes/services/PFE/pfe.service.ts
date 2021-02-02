@@ -145,17 +145,10 @@ export class PfeService {
         }
         */
     //not actual id. numero d'inscri
-    async getPFEsByStudentIDOrYear(student_id: string | undefined, uni_year: number | undefined): Promise<PFE[] | undefined> { //par année universitaire
+    async getPFEsByStudentIDOrYear(student_id: string | undefined): Promise<PFE | undefined> { //par année universitaire
         const where = {}
         const relations = ["soutenance", "soutenance.pfe"]
-        if (student_id)
-            where["student_id_number"] = Like("%" + student_id + "%");
-        if (uni_year) {
-            where["year"] = { "year": uni_year }
-            relations.push("year")
-        }
-        if (!uni_year && !student_id)
-            return undefined
+        where["student_id_number"] = Like("%" + student_id + "%");
         return await this.studentRepository.find(
             {
                 relations: relations,
@@ -168,7 +161,7 @@ export class PfeService {
                 if (students[index].soutenance)
                     pfes.push(students[index].soutenance.pfe)
             }
-            return pfes
+            return pfes[0]
         })
     }
 
