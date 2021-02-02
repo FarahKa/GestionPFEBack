@@ -38,6 +38,7 @@ export class Etudiant extends Timestamp {
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "year" })
   year: AnneeScolaire;

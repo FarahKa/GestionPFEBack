@@ -4,11 +4,11 @@ import { Soutenance } from "src/entities/soutenance.entity";
 import { FiliereEnum } from "src/enums/filere.enum";
 import { Column, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 
-export class UpadateEtudiantDto {
+export class UpdateEtudiantDto {
     
 
     @IsNotEmpty()
-    soutenance: Soutenance;
+    idSoutenance: number;
 
 
 }
