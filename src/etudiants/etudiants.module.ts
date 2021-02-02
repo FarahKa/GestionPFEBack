@@ -13,6 +13,7 @@ import { EtudiantService } from './services/etudiant/etudiant.service';
       TypeOrmModule.forFeature([
         Etudiant, Soutenance, AnneeScolaire
       ])
-    ]
+    ],
+    exports:[EtudiantService]
 })
 export class EtudiantsModule {}

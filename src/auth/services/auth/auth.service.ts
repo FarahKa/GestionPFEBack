@@ -1,5 +1,6 @@
+import { EtudiantService } from 'src/etudiants/services/etudiant/etudiant.service';
+import { AdminService } from 'src/admin/services/admin/admin.service';
 import { LoginUserDto } from './../../dto/loginUser.dto';
-import { CreateUserDto } from '../../dto/createUser.dto';
 import { User } from './../../../entities/user.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from  '@nestjs/jwt';
@@ -13,7 +14,8 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-
+        private readonly adminService: AdminService,
+        private  readonly  etudiantService:  EtudiantService,
     ) { }
 
     private async validate(userData: LoginUserDto): Promise<User> {
@@ -39,37 +41,46 @@ export class AuthService {
 
           let payload = `${userData.email}${userData.cin}`;
           const accessToken = this.jwtService.sign(payload);
-          //started making u bech nraj3ou howa, just gotta find el entity lo5ra suivant el usertype
-         let u : any = {
+         let primary : any = {
             token: accessToken,
             cin: userData.cin,
             email: userData.email,
             role: userData.role,
          }
-        //  switch (userData.role){
-        //      case Role.Student : {
-        //         //get el studentRepository w find bel CIN mta3 el user
-        //          //remarque: fel student kahaw: el primary key composite (cin, anneescolaire) donc a3mel findOne({ where: {cin : userData.cin}})
-        //          // mouch find(userData.cin) 5ater it wont work :)
-        //          //put fel u el infosyou wanna get back mel o
+          switch (userData.role){
+             case Role.Student : {
+                await this.etudiantService.get_etudiant_by_cin(userData.cin).then(
+                    (student)=>{
+                       primary.firstname=student.firstname,
+                       primary.lastname=student.lastname,
+                       primary.phoneNumber=student.phoneNumber,
+                       primary. student_id_number=student.student_id_number,
+                       primary.filiere=student.filiere,
+                       primary.year=student.year
 
-        //         break;
-        //      }
-        //     //do other cases, admin w enseignant
+                 })
 
-        //  }
+                 break;
+              }
+              case Role.Teacher: {
 
-        //return el u
-          return {
-             token: accessToken,
-             cin: userData.cin,
-             email: userData.email,
-            //  firstname: userData.firstname,
-            //  lastname: userData.lastname,
-            //  phoneNumber:userData.phoneNumber,
-             role:userData.role
+                break;
+             }
+             case Role.Admin : {
+                 await this.adminService.findByCin(userData.cin).then(
+                     (admin)=>{
+                        primary.firstname=admin.firstname,
+                        primary.lastname=admin.lastname,
+                        primary.phoneNumber=admin.phoneNumber
 
-          };
+                  })
+                                  
+                break;
+             }
+
+          }
+
+          return primary
 
         });
     }

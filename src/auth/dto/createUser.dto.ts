@@ -1,5 +1,7 @@
 import { Role } from '../../enums/role.enum';
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
+import { FiliereEnum } from 'src/enums/filere.enum';
+import { DepEnum } from 'src/enums/departement.enum';
 
 
 
@@ -26,5 +28,16 @@ export class CreateUserDto{
     @IsNotEmpty()
     role: Role;
 
+    @IsOptional()
+    student_id_number: number;
+
+    @IsOptional()
+    filiere: FiliereEnum;
+
+    @IsOptional()
+    year: number;
+
+    @IsOptional()
+    departement: DepEnum;
 
 }

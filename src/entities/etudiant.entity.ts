@@ -1,3 +1,4 @@
+import { Timestamp } from './../generics/timestamps';
 import {
   Column,
   Entity,
@@ -16,7 +17,7 @@ import { FiliereEnum } from '../enums/filere.enum'
 
 @Entity('etudiant')
 @Index(["cin", "year"], { unique: true })
-export class Etudiant extends User {
+export class Etudiant extends Timestamp {
 
   //@PrimaryColumn()
   @OneToOne(() => User)

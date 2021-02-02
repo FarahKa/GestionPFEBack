@@ -16,7 +16,7 @@ import { Timestamp } from '../generics/timestamps';
 import { User } from './user.entity';
 
 @Entity('admin')
-export class Admin{
+export class Admin extends Timestamp {
 
     @PrimaryColumn()
     @OneToOne(() => User)
