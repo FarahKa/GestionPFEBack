@@ -27,6 +27,7 @@ export class RoleEnseignantSession extends Timestamp {
     {
       primary: true,
       nullable: false,
+      eager: true
     }
   )
   @JoinColumn({ name: "enseignantId" })
@@ -37,6 +38,7 @@ export class RoleEnseignantSession extends Timestamp {
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "sessionId" })
   session: Session;

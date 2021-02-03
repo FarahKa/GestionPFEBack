@@ -145,24 +145,12 @@ export class PfeService {
         }
         */
     //not actual id. numero d'inscri
-    async getPFEsByStudentIDOrYear(student_id: string | undefined): Promise<PFE | undefined> { //par année universitaire
-        const where = {}
-        const relations = ["soutenance", "soutenance.pfe"]
-        where["student_id_number"] = Like("%" + student_id + "%");
-        return await this.studentRepository.find(
-            {
-                relations: relations,
-                // we can just give partie ml num d 'incri w houwa ytalla3 l possible stuff
-                where: where
-            }
-        ).then((students) => {
-            const pfes: PFE[] = []
-            for (let index = 0; index < students.length; index++) {
-                if (students[index].soutenance)
-                    pfes.push(students[index].soutenance.pfe)
-            }
-            return pfes[0]
-        })
+    async getPFEsByStudentIDOrYear(student_id: number | undefined): Promise<PFE> { //par année universitaire
+    let etudiant = await this.studentRepository.findOne({student_id_number: student_id});
+    let soutenance = etudiant.soutenance; 
+    return soutenance.pfe;
+
+
     }
 
     /*
