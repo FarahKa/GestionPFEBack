@@ -5,6 +5,7 @@ import { ValidateInvalidateSubjectDto } from 'src/pfes/dto/validate-invalidate_s
 import { AffectSubjectToMentorDto } from 'src/pfes/dto/affect_sub_mentor.dto';
 import { PfeService } from 'src/pfes/services/pfe/pfe.service';
 import { ParseIntPipe } from '@nestjs/common';
+import { Soutenance } from 'src/entities/soutenance.entity';
 
 @Controller('pfe')
 export class PfeController {
@@ -63,7 +64,7 @@ export class PfeController {
     }
 */
     @Get("pfes_by_student_id_year/:student_id")
-    async getPFEsByStudentId(@Param('student_id', new ParseIntPipe()) student_id): Promise<PFE | undefined> { //: Promise<PFE> 
+    async getPFEsByStudentId(@Param('student_id', new ParseIntPipe()) student_id): Promise<PFE> { //: Promise<PFE> 
         return await this.pfeService.getPFEsByStudentIDOrYear(student_id);
     }
 /*

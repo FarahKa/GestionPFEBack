@@ -10,23 +10,23 @@ import { EtudiantService } from 'src/etudiants/services/etudiant/etudiant.servic
 export class EtudiantController {
     constructor(private etudiantService: EtudiantService) {}
 
-    @Get("all")
+    @Get("all")//works
     getAllEtudiants(): Promise<Etudiant[]> {
         return this.etudiantService.get_all_etudiants();
     }
 
-    @Get("etudiant/:id")
+    @Get("etudiant/:id")//works
     getEtudiantById(@Param('id', new ParseIntPipe()) id: number) {
         return this.etudiantService.get_etudiant_by_id(id);
 
     }
 
-    @Post("createEtudiant")
+    @Post("createEtudiant")//replaces instead
     createEtudiant(@Body() body: CreateEtudiantDto): Promise<Etudiant> {
         return this.etudiantService.create_etudiant(body);
     }
 
-    @Put("update/:idEtudiant/:idSoutenance")
+    @Put("update/:idEtudiant/:idSoutenance")//works
     updateEtudiant(
         @Param('idEtudiant', new ParseIntPipe()) idEtudiant: number,
         @Param('idSoutenance', new ParseIntPipe()) idSoutenance: number
@@ -38,12 +38,12 @@ export class EtudiantController {
         return this.etudiantService.delete_etudiant_by_id(id);
     }
 
-    @Get("filiere/:filiere")
+    @Get("filiere/:filiere")//works
     getEtudiantsByFiliere(@Param('filiere') filiere: FiliereEnum):Promise<Etudiant[]> {
         return this.etudiantService.get_etudiant_by_filiere(filiere);
     }
 
-    @Get("soutenance/:soutenanceId")
+    @Get("soutenance/:soutenanceId")//works
     getEtudiantBySoutenanceId(@Param('soutenanceId', new ParseIntPipe()) SoutenanceId: number): Promise<Etudiant> {
         return this.etudiantService.get_etudiant_by_soutenance_id(SoutenanceId);
     }

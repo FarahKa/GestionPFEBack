@@ -16,7 +16,8 @@ export class RoleEnseignantSoutenance extends Timestamp {
   @PrimaryColumn({
     type: 'enum',
     enum: RoleEnseignantEnum,
-    default: RoleEnseignantEnum.membre_jury
+    default: RoleEnseignantEnum.membre_jury,
+    
   }
   )
   role: RoleEnseignantEnum;
@@ -27,6 +28,7 @@ export class RoleEnseignantSoutenance extends Timestamp {
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "enseignantId" })
   enseignant: Enseignant;
@@ -37,6 +39,7 @@ export class RoleEnseignantSoutenance extends Timestamp {
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "soutenanceId" })
   soutenance: Soutenance;

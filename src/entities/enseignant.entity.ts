@@ -19,7 +19,7 @@ import { User } from './user.entity';
 export class Enseignant extends Timestamp {
 
     @PrimaryColumn()
-    @OneToOne(() => User)
+    @OneToOne(() => User, {eager: true})
     @JoinColumn({ name: "cin" })
     cin: string;
   

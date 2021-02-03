@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AnneeScolaire } from 'src/entities/annee-scolaire.entity';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
+import { User } from 'src/entities/user.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
 import { CreateEtudiantDto } from 'src/etudiants/dto/createEtudiantDto';
 import { UpdateEtudiantDto } from 'src/etudiants/dto/updateEtudiantDto';
@@ -19,6 +20,9 @@ export class EtudiantService {
 
         @InjectRepository(AnneeScolaire)
         private AnneeScolaireRepository: Repository<AnneeScolaire>,
+
+        @InjectRepository(User)
+        private UserRepository: Repository<User>
     ) {}
 
     async get_etudiant_by_id(student_id_number: number): Promise<Etudiant> {
@@ -28,17 +32,18 @@ export class EtudiantService {
 
     }
     async get_etudiant_by_cin(cin: string): Promise<Etudiant> {
-        return await this.etudiantRepository.findOne({cin: cin});
+        let etudiant = await this.etudiantRepository.findOne({cin: cin});
+        return etudiant
     }
 
-    async create_etudiant(etudiant: CreateEtudiantDto) {
-        const newEtudiant = this.etudiantRepository.create();
+    async create_etudiant(etudiant: CreateEtudiantDto) {//it pdates intstead
+        let newEtudiant = this.etudiantRepository.create();
         let annee = await this.AnneeScolaireRepository.findOne({year: etudiant.year});
+        let cin = await this.UserRepository.findOne({cin: etudiant.cin})
         newEtudiant.year = annee;
-        newEtudiant.cin = etudiant.cin;
+        newEtudiant.cin = cin.cin;
         newEtudiant.firstname = etudiant.firstname;
-        newEtudiant.lastname = etudiant.lastname; 
-        //newEtudiant.email = etudiant.email;
+        newEtudiant.lastname = etudiant.lastname;
         newEtudiant.phoneNumber = etudiant.phoneNumber;
         newEtudiant.student_id_number = etudiant.student_id_number;
         newEtudiant.filiere = etudiant.filiere;

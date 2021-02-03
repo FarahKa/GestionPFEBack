@@ -18,9 +18,6 @@ export class CreateEtudiantDto{
     lastname: string;
 
     @IsNotEmpty()
-    email: string;
-
-    @IsNotEmpty()
     phoneNumber: number;
 
     @IsNotEmpty()

@@ -9,6 +9,7 @@ import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenanc
 import { totalmem } from 'os';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { profile } from 'console';
+import { Etudiant } from 'src/entities/etudiant.entity';
 /**
  * 
  * 
@@ -38,6 +39,8 @@ export class SoutenanceService {
     private enseignantRepository: Repository<Enseignant>,
     @InjectRepository(RoleEnseignantSoutenance)
     private roleSoutenanceRepository: Repository<RoleEnseignantSoutenance>,
+    @InjectRepository(Etudiant) 
+    private etudiantRepository: Repository<Etudiant>,
     ) {}
 
 
@@ -156,6 +159,12 @@ export class SoutenanceService {
     let soutenances = await this.soutenanceRepository.find({relations : ["pfe", "etudiant", "session"]});
     soutenances = soutenances.filter((soutenance) => soutenance.session === null)
     return(soutenances)
+
+  }
+
+  async getSoutenanceByStudentId(studentId: number): Promise<Soutenance> {
+    let student =await  this.etudiantRepository.findOne({student_id_number: studentId});
+    return student.soutenance;
 
   }
 
