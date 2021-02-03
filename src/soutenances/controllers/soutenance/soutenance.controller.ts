@@ -58,4 +58,9 @@ export class SoutenanceController {
     getJury(@Param('idSoutenance', new ParseIntPipe()) idSoutenance){
         return this.soutenanceService.getJury(idSoutenance)
     }
+
+    @Get("soutenancesByFiliere")
+    getSoutenancesByFiliere(){
+        return this.soutenanceService.getSoutenancesByFiliere()
+    }
 }

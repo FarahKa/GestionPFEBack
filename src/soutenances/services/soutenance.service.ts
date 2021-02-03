@@ -11,22 +11,22 @@ import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { profile } from 'console';
 import { Etudiant } from 'src/entities/etudiant.entity';
 /**
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
  * my dude 3andek getsession w get soutenance by pfeId to do
  * also fibeli some people get one soutenance date but mayal79ouch ykamlou
  * so they move the date l nahr e5er
  * so a3mel a thing ychangi e date
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
  */
 @Injectable()
 export class SoutenanceService {
@@ -44,25 +44,27 @@ export class SoutenanceService {
     ) {}
 
 
-  
+  //   async createSoutenance(newSoutenance: CreateSoutenanceDto): Promise<Soutenance> {
+  //     const soutenance = this.soutenanceRepository.create(newSoutenance);
+  //     return await this.soutenanceRepository.save(soutenance);
+  //   }
 
-//   async createSoutenance(newSoutenance: CreateSoutenanceDto): Promise<Soutenance> {
-//     const soutenance = this.soutenanceRepository.create(newSoutenance);
-//     return await this.soutenanceRepository.save(soutenance);
-//   }
+  async affecterSession(
+    idSession: number,
+    idSoutenance: number,
+  ): Promise<Soutenance> {
+    let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+    let session = await this.sessionRepository.findOne(idSession);
 
-     async affecterSession(idSession : number, idSoutenance : number): Promise<Soutenance>{
-      let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
-      let session = await this.sessionRepository.findOne(idSession);
+    soutenance.session = session;
 
-      soutenance.session = session;
-
-      return await this.soutenanceRepository.save(soutenance)
-
-    }
+    return await this.soutenanceRepository.save(soutenance);
+  }
 
   findAll(): Promise<Soutenance[]> {
-    return this.soutenanceRepository.find({relations : ["pfe", "etudiant", "session"]});
+    return this.soutenanceRepository.find({
+      relations: ['pfe', 'etudiant', 'session'],
+    });
   }
 
   findOne(id: string): Promise<Soutenance> {
@@ -73,59 +75,65 @@ export class SoutenanceService {
     await this.soutenanceRepository.delete(id);
   }
 
-  getAllProfessors() : Promise<Enseignant[]> {
+  getAllProfessors(): Promise<Enseignant[]> {
     return this.enseignantRepository.find();
   }
 
-  async getEncadrant(id) : Promise<Enseignant>{
-  let role = await this.roleSoutenanceRepository.findOne({where : {
-      soutenance : {id:id}, role: RoleEnseignantEnum.encadrant
-    },
-    relations: ["enseignant"]
-  })
-  if(role){
-      return(role.enseignant)
-  } else {
-    return null
+  async getEncadrant(id): Promise<Enseignant> {
+    let role = await this.roleSoutenanceRepository.findOne({
+      where: {
+        soutenance: { id: id },
+        role: RoleEnseignantEnum.encadrant,
+      },
+      relations: ['enseignant'],
+    });
+    if (role) {
+      return role.enseignant;
+    } else {
+      return null;
+    }
   }
 
+  async getJury(idSoutenance): Promise<Enseignant[]> {
+    let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+    let juryRoles = await this.roleSoutenanceRepository.find({
+      where: { role: RoleEnseignantEnum.membre_jury, soutenance: soutenance },
+      relations: ['enseignant'],
+    });
+    let jury: Enseignant[] = [];
+    juryRoles.forEach(jureRole => {
+      jury.push(jureRole.enseignant);
+    });
+    return jury;
   }
-
-  async getJury(idSoutenance) : Promise<Enseignant[]>{
-    let soutenance = await this.soutenanceRepository.findOne(idSoutenance)
-    let juryRoles = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance},  relations: ["enseignant"]})
-    let jury : Enseignant[] = []
-    juryRoles.forEach((jureRole)=> {
-      jury.push(jureRole.enseignant)
-    })
-    return jury
-  }
-
-
-
-  async assignEncadrant(idSoutenance : number, idEnseignant : string) : Promise<RoleEnseignantSoutenance>{
+  async assignEncadrant(
+    idSoutenance: number,
+    idEnseignant: string,
+  ): Promise<RoleEnseignantSoutenance> {
     let role = new RoleEnseignantSoutenance();
-    role.enseignant = await this.enseignantRepository.findOne(idEnseignant) ;
-    role.soutenance = await this.soutenanceRepository.findOne(idSoutenance) ;
+    role.enseignant = await this.enseignantRepository.findOne(idEnseignant);
+    role.soutenance = await this.soutenanceRepository.findOne(idSoutenance);
     role.role = RoleEnseignantEnum.encadrant;
-    return this.roleSoutenanceRepository.save(role);   
+    return this.roleSoutenanceRepository.save(role);
   }
 
-  async patchSoutenance(idSoutenance: number, data : any) : Promise<Soutenance> {
-
-    let soutenance = await this.soutenanceRepository.findOne(idSoutenance)
-    if(data.session && data.session !== ""){
+  async patchSoutenance(idSoutenance: number, data: any): Promise<Soutenance> {
+    let soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+    if (data.session && data.session !== '') {
       let session = await this.sessionRepository.findOne(data.session);
       soutenance.session = session;
     }
 
-    if(data.encadrant && data.encadrant !== ""){
-      let encadrant = await this.enseignantRepository.findOne(data.encadrant)
-      let role = await this.roleSoutenanceRepository.findOne({where:{role: RoleEnseignantEnum.encadrant, soutenance: soutenance}, relations: ["enseignant", "soutenance"]})
-      if(!role){
-        console.log("there is no encadrant)")
+    if (data.encadrant && data.encadrant !== '') {
+      let encadrant = await this.enseignantRepository.findOne(data.encadrant);
+      let role = await this.roleSoutenanceRepository.findOne({
+        where: { role: RoleEnseignantEnum.encadrant, soutenance: soutenance },
+        relations: ['enseignant', 'soutenance'],
+      });
+      if (!role) {
+        console.log('there is no encadrant)');
       } else {
-         await this.roleSoutenanceRepository.remove(role);
+        await this.roleSoutenanceRepository.remove(role);
       }
       role = new RoleEnseignantSoutenance();
       role.role = RoleEnseignantEnum.encadrant;
@@ -133,33 +141,36 @@ export class SoutenanceService {
       role.enseignant = encadrant;
       await this.roleSoutenanceRepository.save(role);
     }
-    if(data.jury && data.jury !== [] && data.jury !== ""){
-      let jury = await this.roleSoutenanceRepository.find({where: {role:RoleEnseignantEnum.membre_jury, soutenance: soutenance},  relations: ["enseignant", "soutenance"]})
-      console.warn("old jury:")
-      console.warn(jury)
-      for(let prof of jury) {
+    if (data.jury && data.jury !== [] && data.jury !== '') {
+      let jury = await this.roleSoutenanceRepository.find({
+        where: { role: RoleEnseignantEnum.membre_jury, soutenance: soutenance },
+        relations: ['enseignant', 'soutenance'],
+      });
+      console.warn('old jury:');
+      console.warn(jury);
+      for (let prof of jury) {
         await this.roleSoutenanceRepository.remove(prof);
       }
-      data.jury.forEach(async (profCIN) => {
-          let role = new RoleEnseignantSoutenance();
-          role.enseignant = await this.enseignantRepository.findOne(profCIN)
-          role.soutenance = soutenance;
-          role.role = RoleEnseignantEnum.membre_jury;
-          await this.roleSoutenanceRepository.save(role);       
-      })
+      data.jury.forEach(async profCIN => {
+        let role = new RoleEnseignantSoutenance();
+        role.enseignant = await this.enseignantRepository.findOne(profCIN);
+        role.soutenance = soutenance;
+        role.role = RoleEnseignantEnum.membre_jury;
+        await this.roleSoutenanceRepository.save(role);
+      });
     }
-    if(data.date && data.date !== ""){
+    if (data.date && data.date !== '') {
       soutenance.date = data.date;
     }
-    return this.soutenanceRepository.save(soutenance)
+    return this.soutenanceRepository.save(soutenance);
+  }
 
-  } 
-
-  async getRogueSoutenances() : Promise<Soutenance[]> {
-    let soutenances = await this.soutenanceRepository.find({relations : ["pfe", "etudiant", "session"]});
-    soutenances = soutenances.filter((soutenance) => soutenance.session === null)
-    return(soutenances)
-
+  async getRogueSoutenances(): Promise<Soutenance[]> {
+    let soutenances = await this.soutenanceRepository.find({
+      relations: ['pfe', 'etudiant', 'session'],
+    });
+    soutenances = soutenances.filter(soutenance => soutenance.session === null);
+    return soutenances;
   }
 
   async getSoutenanceByStudentId(studentId: number): Promise<Soutenance> {
@@ -168,4 +179,32 @@ export class SoutenanceService {
 
   }
 
+  async getSoutenancesByFiliere(): Promise<any> {
+    let soutenances: any[] = await this.soutenanceRepository.find({
+      relations: ['pfe', 'etudiant', 'session'],
+    });
+    console.warn(soutenances);
+    let filieres = [];
+
+    for (let soutenance of soutenances) {
+      soutenance.encadrant = await this.getEncadrant(soutenance.id);
+      soutenance.jury = await this.getJury(soutenance.id);
+      let filiere = filieres.find(
+        filiere => filiere.nom === soutenance.etudiant.filiere,
+      );
+      if (filiere) {
+        console.warn(filiere);
+        filiere.soutenances.push(soutenance);
+      } else {
+        filiere = {
+          nom: soutenance.etudiant.filiere,
+          soutenances: [soutenance],
+        };
+        filieres.push(filiere);
+        console.warn(filieres)
+      }
+    };
+    console.warn("yo" + filieres);
+    return filieres;
+  }
 }
