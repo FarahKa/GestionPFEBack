@@ -21,6 +21,7 @@ import { EtudiantsModule } from 'src/etudiants/etudiants.module';
     
     ],
     providers: [UserService, AuthService],
-    controllers: [AuthController, UserController]
+    controllers: [AuthController, UserController],
+    exports:[UserService,AuthService]
 })
 export class AuthModule { }

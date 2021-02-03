@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { csvFileFilter, editFileName } from './../../../utils/file-upload.utils';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
@@ -8,7 +10,7 @@ import { EtudiantService } from 'src/etudiants/services/etudiant/etudiant.servic
 
 @Controller('etudiants')
 export class EtudiantController {
-    constructor(private etudiantService: EtudiantService) {}
+    constructor(private etudiantService: EtudiantService) { }
 
     @Get("all")
     getAllEtudiants(): Promise<Etudiant[]> {
@@ -30,16 +32,16 @@ export class EtudiantController {
     updateEtudiant(
         @Param('idEtudiant', new ParseIntPipe()) idEtudiant: number,
         @Param('idSoutenance', new ParseIntPipe()) idSoutenance: number
-        ): Promise<Etudiant>{
+    ): Promise<Etudiant> {
         return this.etudiantService.update_etudiant(idEtudiant, idSoutenance);
     }
     @Delete(":id")
-    deleteEtudiant(@Param('id', new ParseIntPipe()) id:number): Promise<void> {
+    deleteEtudiant(@Param('id', new ParseIntPipe()) id: number): Promise<void> {
         return this.etudiantService.delete_etudiant_by_id(id);
     }
 
     @Get("filiere/:filiere")
-    getEtudiantsByFiliere(@Param('filiere') filiere: FiliereEnum):Promise<Etudiant[]> {
+    getEtudiantsByFiliere(@Param('filiere') filiere: FiliereEnum): Promise<Etudiant[]> {
         return this.etudiantService.get_etudiant_by_filiere(filiere);
     }
 
@@ -48,4 +50,14 @@ export class EtudiantController {
         return this.etudiantService.get_etudiant_by_soutenance_id(SoutenanceId);
     }
 
+    @Post("import")
+    @UseInterceptors(FilesInterceptor("files[]", 100, 
+        {
+            dest: './uploads',
+            fileFilter: csvFileFilter
+        }
+    ) )
+    importEtudiants(@UploadedFiles() files) {
+       return this.etudiantService.importEtudiants(files);
+    }
 }

@@ -22,7 +22,7 @@ export class AdminService {
     }
 
     async create(admin: CreateAdminDto): Promise<Admin | void |{ status: number }> {
-
+              console.log(admin);
               const newAdmin = this.adminRepository.create();
               newAdmin.cin = admin.cin;
               newAdmin.firstname = admin.firstname;
