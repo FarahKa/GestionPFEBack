@@ -109,8 +109,11 @@ export class PfeService {
     //if you want to get all pfes then just pass nothing as a parameter
     async get_PFEs_by_year_with_students_teachers(year: number | undefined) {
         const where = {}
-        if (year)
+        console.log(year)
+        if (year) {
+            console.log("fl year")
             where["year"] = { "year": year }
+        }
         return await this.studentRepository.find(
             {
                 relations: ["soutenance", "soutenance.pfe", "year"],

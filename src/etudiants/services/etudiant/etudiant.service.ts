@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AnneeScolaire } from 'src/entities/annee-scolaire.entity';
@@ -10,6 +11,7 @@ import { UpdateEtudiantDto } from 'src/etudiants/dto/updateEtudiantDto';
 import { Like, Repository } from 'typeorm';
 @Injectable()
 export class EtudiantService {
+
     constructor(
 
         @InjectRepository(Etudiant)
@@ -21,6 +23,16 @@ export class EtudiantService {
         @InjectRepository(AnneeScolaire)
         private AnneeScolaireRepository: Repository<AnneeScolaire>,
     ) { }
+
+    async get_etudiant_by_cin(cin: string) {
+        const relations = ["year","user"]
+        return await this.etudiantRepository.findOne({
+            where: { cin: cin },
+            relations: relations
+        }).then((etudiant) => {
+            return etudiant
+        });
+    }
 
     async get_etudiant_by_id(student_id_number: number): Promise<Etudiant> {
         const relations = ["year"]
