@@ -8,6 +8,7 @@ import { ParseIntPipe } from '@nestjs/common';
 import { CreatePFEDto } from 'src/pfes/dto/create_pfe.dto';
 import { identity } from 'rxjs';
 import { UpdatePFEDto } from 'src/pfes/dto/update_pfe.dto';
+import { Soutenance } from 'src/entities/soutenance.entity';
 
 @Controller('pfe')
 export class PfeController {

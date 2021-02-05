@@ -1,3 +1,4 @@
+import { Timestamp } from './../generics/timestamps';
 import {
   Column,
   Entity,
@@ -5,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
 import { AnneeScolaire } from './annee-scolaire.entity';
 import { User } from './user.entity';
@@ -15,12 +17,34 @@ import { FiliereEnum } from '../enums/filere.enum'
 
 @Entity('etudiant')
 @Index(["cin", "year"], { unique: true })
-export class Etudiant extends User {
+export class Etudiant extends Timestamp {
+
+
+  @PrimaryColumn()
+  @OneToOne(() => User,
+  {
+    eager: true
+  })
+  @JoinColumn({ name: "cin" })
+  cin: string;
+
+  @Column()
+  firstname: string;
+
+  @Column()
+  lastname: string;
+
+  @Column()
+    phoneNumber: number;
+
+    
+  @PrimaryColumn()
   @ManyToOne(() => AnneeScolaire,
     year => year.year,
     {
       primary: true,
       nullable: false,
+      eager: true
     })
   @JoinColumn({ name: "year" })
   year: AnneeScolaire;
@@ -38,7 +62,7 @@ export class Etudiant extends User {
   @JoinColumn({ name: "pfeId" })
   pfe: PFE;*/
 
-  @OneToOne(() => Soutenance)
+  @OneToOne(() => Soutenance, {eager: true})
   @JoinColumn({ name: "soutenanceId" })
   soutenance: Soutenance;
 

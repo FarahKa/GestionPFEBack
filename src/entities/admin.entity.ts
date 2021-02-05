@@ -15,11 +15,11 @@ import {
 import { Timestamp } from '../generics/timestamps';
 import { User } from './user.entity';
 
-@Entity('enseignant')
-export class Enseignant extends Timestamp {
+@Entity('admin')
+export class Admin extends Timestamp {
 
     @PrimaryColumn()
-    @OneToOne(() => User, {eager: true})
+    @OneToOne(() => User,{eager: true})
     @JoinColumn({ name: "cin" })
     cin: string;
   
@@ -31,10 +31,4 @@ export class Enseignant extends Timestamp {
   
     @Column()
       phoneNumber: number;
-
-    @Column({
-      type: 'enum',
-      enum: DepEnum,
-    })
-    departement: DepEnum;
 }

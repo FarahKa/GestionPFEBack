@@ -1,48 +1,51 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
 import { CreateEtudiantDto } from 'src/etudiants/dto/createEtudiantDto';
+import { UpdateEtudiantDto } from 'src/etudiants/dto/updateEtudiantDto';
 import { EtudiantService } from 'src/etudiants/services/etudiant/etudiant.service';
 
-@Controller('etudiant')
+@Controller('etudiants')
 export class EtudiantController {
     constructor(private etudiantService: EtudiantService) {}
 
-    @Get(":id")
-    getEtudiantById(@Param('id') id: number): Promise<Etudiant>{
+    @Get("all")//works
+    getAllEtudiants(): Promise<Etudiant[]> {
+        return this.etudiantService.get_all_etudiants();
+    }
+
+    @Get("etudiant/:id")//works
+    getEtudiantById(@Param('id', new ParseIntPipe()) id: number) {
         return this.etudiantService.get_etudiant_by_id(id);
 
     }
 
-    @Post("createEtudiant")
+    @Post("createEtudiant")//replaces instead
     createEtudiant(@Body() body: CreateEtudiantDto): Promise<Etudiant> {
         return this.etudiantService.create_etudiant(body);
     }
 
-    @Put(":idEtudiant/:idSoutence")
+    @Put("update/:idEtudiant/:idSoutenance")//works
     updateEtudiant(
-            @Param('idEtudiant') idEtudiant: number,
-            @Param('idSoutenance') idSoutenance: number): Promise<Etudiant>{
+        @Param('idEtudiant', new ParseIntPipe()) idEtudiant: number,
+        @Param('idSoutenance', new ParseIntPipe()) idSoutenance: number
+        ): Promise<Etudiant>{
         return this.etudiantService.update_etudiant(idEtudiant, idSoutenance);
     }
     @Delete(":id")
-    deleteEtudiant(@Param('id') id:number): Promise<void> {
+    deleteEtudiant(@Param('id', new ParseIntPipe()) id:number): Promise<void> {
         return this.etudiantService.delete_etudiant_by_id(id);
     }
-    @Get("all")
-    getAllEtudiants(): Promise<Etudiant[]> {
-        return this.etudiantService.get_all_etudiants();
-    }
-/*
-    @Get(":filiere")
+
+    @Get("filiere/:filiere")//works
     getEtudiantsByFiliere(@Param('filiere') filiere: FiliereEnum):Promise<Etudiant[]> {
         return this.etudiantService.get_etudiant_by_filiere(filiere);
     }
 
-    @Get(":soutenanceId")
-    getEtudiantBySoutenanceId(@Param('soutenanceId') SoutenanceId: number): Promise<Etudiant> {
+    @Get("soutenance/:soutenanceId")//works
+    getEtudiantBySoutenanceId(@Param('soutenanceId', new ParseIntPipe()) SoutenanceId: number): Promise<Etudiant> {
         return this.etudiantService.get_etudiant_by_soutenance_id(SoutenanceId);
     }
-*/
+
 }
