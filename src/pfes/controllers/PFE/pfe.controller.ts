@@ -27,10 +27,7 @@ export class PfeController {
     // create an empty pfe along with an empty soutenance
     @Post("create")
     async postPFE(@Body() body: CreatePFEDto): Promise<PFE | void | undefined> {
-        console.log("here")
-        if (body.student_id)
-            return await this.pfeService.createPFE(body.student_id)
-        return undefined
+        return await this.pfeService.createPFE(body)
     }
 
     @Put("update")
@@ -38,7 +35,7 @@ export class PfeController {
         return await this.pfeService.updatePFE(body)
     }
 
-    @Get(":id")
+    @Get("/getPFE/:id")
     async getPFEById(@Param('id', new ParseIntPipe()) id): Promise<PFE | undefined> {
         console.log(id)
         return await this.pfeService.getPFEByID(id)
@@ -84,6 +81,14 @@ export class PfeController {
                 return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
             return undefined
         }*/
+
+
+    //farah: this gets students li mezzelou ma3andhomch pfe
+    @Get("studentsNoPFE")
+    async getStudentsNoPFE(){
+        console.warn("here")
+        return await this.pfeService.getStudentsNoPFE()
+    }
 }
 
 /*

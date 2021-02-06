@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Enseignant } from 'src/entities/enseignant.entity';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { PFE } from 'src/entities/pfe.entity';
 import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
@@ -8,9 +9,10 @@ import { FiliereEnum } from 'src/enums/filere.enum';
 import { PFEStateEnum } from 'src/enums/pfe-state.enum';
 import { RoleEnseignantEnum } from 'src/enums/role-enseignant.enum';
 import { EtudiantService } from 'src/etudiants/services/etudiant/etudiant.service';
+import { CreatePFEDto } from 'src/pfes/dto/create_pfe.dto';
 import { UpdatePFEDto } from 'src/pfes/dto/update_pfe.dto';
 import { SoutenanceService } from 'src/soutenances/services/soutenance.service';
-import { Like, Repository } from 'typeorm';
+import { IsNull, Like, Repository } from 'typeorm';
 
 
 @Injectable()
@@ -29,6 +31,7 @@ export class PfeService {
         @InjectRepository(Etudiant) private studentRepository: Repository<Etudiant>,
         @InjectRepository(RoleEnseignantSoutenance) private roleEnsSoutRepository: Repository<RoleEnseignantSoutenance>,
         @InjectRepository(Soutenance) private soutenanceRepository: Repository<Soutenance>,
+        @InjectRepository(Enseignant) private enseignantRepository: Repository<Enseignant>,
         private soutenanceService: SoutenanceService,
         private etudiantsService: EtudiantService
     ) { }
@@ -43,34 +46,57 @@ export class PfeService {
        }
  */
 
-    async createPFE(student_id: number): Promise<PFE | void> {
+    async createPFE(body : CreatePFEDto): Promise<PFE | void> {
         //first create an empty pfe
         //then create an empty soutenance w assign l pfe to it
         //then assign l pfe ll student 
+
+        let etudiant = await this.studentRepository.findOne(body.etudiant)
         const pfeEntity: PFE = this.pfeRepository.create();
         // set up e defaults
         pfeEntity.private = false
         pfeEntity.state = PFEStateEnum.s1;
-        pfeEntity.hosting_enterprise = ""
-        pfeEntity.subject = ""
+        pfeEntity.hosting_enterprise = body.entreprise
+        pfeEntity.subject = body.sujet
+        pfeEntity.rapport = body.rapport
         pfeEntity.valid = false
-        return await this.pfeRepository.save(pfeEntity)
-            .then(async (data) => {
-                console.log("just created ml pfe here :")
-                console.log(data)
-                await this.soutenanceService.createSoutenance(data)
-                    .then(async (dat) => {
-                        console.log("just created e soutenance here :")
-                        console.log(dat)
-                        await this.etudiantsService.update_etudiant_given_soutenance(student_id, dat)
-                            .then((d) => {
-                                console.log("assigned e thing ll etudiant : ")
-                                console.log(d)
-                            })
-                    })
-            })
+        await this.pfeRepository.save(pfeEntity);
+        let soutenance = new Soutenance();
+        soutenance.pfe = pfeEntity;
+        await this.soutenanceRepository.save(soutenance)
+        etudiant.soutenance = soutenance;
+        await this.studentRepository.save(etudiant)
+        if (body.encadrant && body.encadrant !== '') {
+            let encadrant = await this.enseignantRepository.findOne(body.encadrant);
+            let role = new RoleEnseignantSoutenance()
+            role.enseignant = encadrant;
+            role.soutenance = soutenance
+            await this.roleEnsSoutRepository.save(role)
+        }
+        return pfeEntity
+
+            
+                // console.log("just created ml pfe here :")
+                // console.log(data)
+                // await this.soutenanceService.createSoutenance(data)
+                //     .then(async (dat) => {
+                //         console.log("just created e soutenance here :")
+                //         console.log(dat)
+                //         await this.etudiantsService.update_etudiant_given_soutenance(student_id, dat)
+                //             .then((d) => {
+                //                 console.log("assigned e thing ll etudiant : ")
+                //                 console.log(d)
+                //             })
+                //     })
+
 
         //return await this.pfeRepository
+    }
+
+
+    //farah:this definitely works ama lezmek students with no soutenance w pfe fel database
+    getStudentsNoPFE(){
+        return this.studentRepository.find({where: {soutenance : IsNull()}})
     }
 
     async deletePFE(pfe_id: string): Promise<void> {

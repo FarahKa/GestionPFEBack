@@ -1,6 +1,15 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, isString } from "class-validator";
+import { IsDefined, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, isString } from "class-validator";
 
 export class CreatePFEDto {
     @IsNotEmpty()
-    student_id: number;
+    etudiant: number;
+    @IsDefined()
+    encadrant: string;
+    @IsDefined()
+    entreprise : string;
+    @IsDefined()
+    sujet : string;
+    @IsDefined()
+    rapport : string;
+
 }
