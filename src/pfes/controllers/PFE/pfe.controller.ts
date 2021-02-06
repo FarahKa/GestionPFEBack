@@ -42,13 +42,13 @@ export class PfeController {
     }
 
     // get all pfes along with teacher and student data
-    @Get("get/all")
+    @Get("/all")
     async getPFEs() {
         return await this.pfeService.get_PFEs_by_year_with_students_teachers(undefined)
     }
 
     // get all pfes of a specific year along with teacher and student data 
-    @Get(":year/all")
+    @Get("/all/:year")
     async getPFEsByYear(@Param('year', new ParseIntPipe()) year) {
         console.log(year)
         return await this.pfeService.get_PFEs_by_year_with_students_teachers(year)
