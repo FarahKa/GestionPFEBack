@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Enseignant } from 'src/entities/enseignant.entity';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { PFE } from 'src/entities/pfe.entity';
 import { RoleEnseignantSoutenance } from 'src/entities/role-enseignant-soutenance.entity';
@@ -16,7 +17,7 @@ import { PfeService } from './services/pfe/pfe.service';
     providers: [PfeService],
     imports: [
       TypeOrmModule.forFeature([
-        Etudiant, PFE, RoleEnseignantSoutenance, Soutenance
+        Etudiant, PFE, RoleEnseignantSoutenance, Soutenance, Enseignant
       ]),
       SoutenancesModule,
       EtudiantsModule
