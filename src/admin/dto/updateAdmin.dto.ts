@@ -1,29 +1,29 @@
 import { Role } from '../../enums/role.enum';
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 
 
-export class CreateAdminDto{
-     
+export class UpdateAdminDto{
+
     @IsNotEmpty()
     cin: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     firstname: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     lastname: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     email: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     phoneNumber: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     password: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     role: Role;
 
 

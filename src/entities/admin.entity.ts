@@ -19,7 +19,7 @@ import { User } from './user.entity';
 export class Admin extends Timestamp {
 
     @PrimaryColumn()
-    @OneToOne(() => User,{eager: true})
+    @OneToOne(() => User,{eager: true,onDelete: 'CASCADE' })
     @JoinColumn({ name: "cin" })
     cin: string;
   

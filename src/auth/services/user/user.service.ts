@@ -81,6 +81,44 @@ export class UserService {
         })
        
     }
+    
+    async importEtudiants(files): Promise<void> {
+
+        const response = [];     
+        var fs = require('fs');
+        var csv = require('csv-parser');
+        var newEtudiants: CreateUserDto []= [];
+
+        await files.forEach(file => {
+            const fileReponse = {
+                originalname: file.originalname,
+                filename: file.filename,
+            };
+            response.push(fileReponse);
+        });
 
 
+     await response.forEach(async file => {
+            await fs.createReadStream("./uploads/"+ file.filename)
+                .pipe(csv())
+                .on('data', async function (data) {
+                    try {
+
+                       await newEtudiants.push(data);
+                        
+                    }
+                    catch (err) {
+                        //error handler
+                       throw new HttpException('probleme lors de l\'importation', HttpStatus.BAD_REQUEST);    
+                    }
+                })
+                .on('end', ()=> {   
+                     newEtudiants.forEach( async etudiant => {
+                        return this.create(etudiant);               
+                    });
+                })
+
+        });
+
+}
 }

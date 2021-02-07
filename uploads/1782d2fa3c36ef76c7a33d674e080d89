@@ -1,0 +1,6 @@
+firstname,lastname,cin,phoneNumber,email,password,role,filiere,student_id_number,year
+student1,student1,15010523,12345678,student1@sad.e,123456,Etudiant,GL,1425367,2020
+student2,student2,45553456,45854424,student2@sad.a,123456,Etudiant,GL,4564865,2020
+student3,student3,54564688,75465477,student3@sad.a,123456,Etudiant,GL,1425778,2020
+student4,student4,78567888,42345648,student4@sad.a,123456,Etudiant,GL,3657527,2020
+student5,student5,54546885,45646587,student5@sad.a,123456,Etudiant,GL,1452367,2020

@@ -1,3 +1,4 @@
+import { AuthModule } from './../auth/auth.module';
 import { Admin } from './../entities/admin.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';

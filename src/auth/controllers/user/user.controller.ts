@@ -1,6 +1,8 @@
 import { CreateUserDto } from '../../dto/createUser.dto';
-import { Controller, Post, Body, Get } from  '@nestjs/common';
+import { Controller, Post, Body, Get, UseInterceptors, UploadedFiles } from  '@nestjs/common';
 import { UserService } from './../../services/user/user.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { csvFileFilter, editFileName } from './../../../utils/file-upload.utils';
 
 @Controller('users')
 export class UserController {
@@ -11,6 +13,16 @@ export class UserController {
     @Post('register')
     async register(@Body() user:CreateUserDto): Promise<any> {
       return this.userService.create(user);
+    }
+    @Post("import")
+    @UseInterceptors(FilesInterceptor("files[]", 100, 
+        {
+            dest: './uploads',
+            fileFilter: csvFileFilter
+        }
+    ) )
+    importEtudiants(@UploadedFiles() files) {
+       return this.userService.importEtudiants(files);
     }
 /*
     @Get(":id")

@@ -1,3 +1,4 @@
+import { UpdateAdminDto } from './../../dto/updateAdmin.dto';
 import { CreateAdminDto } from './../../dto/createAdmin.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from './../../../entities/admin.entity';
@@ -32,4 +33,37 @@ export class AdminService {
               return await this.adminRepository.save(newAdmin);                    
 
     }
+    async update_admin(idAdmin :number,updateAdmin:UpdateAdminDto): Promise<Admin> {
+        const admin = await this.findByCin(updateAdmin.cin);
+        console.log("old admin",admin);
+        if (admin)
+     
+      {
+      if(updateAdmin.firstname)
+      admin.firstname=updateAdmin.firstname;
+      if(updateAdmin.lastname)
+      admin.lastname=updateAdmin.lastname;
+      if(updateAdmin.phoneNumber)
+      admin.phoneNumber=updateAdmin.phoneNumber;
+      return await this.adminRepository.save(admin);
+
+    }
+    else {
+
+         throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);   
+    }
+        /*const user = await this.userService.findByCin(idAdmin.toString());
+        /if(updateAdmin.email)
+        user.email=updateAdmin.email;  
+        await this.userRepository.save(admin);*/
+
+       
+    }
+    async delete_admin_by_id(id:string): Promise<any> {
+        return await  this.adminRepository.delete(id);
+    }
+    async getAllAdmins(): Promise<Admin[]> {
+        return this.adminRepository.find();
+      }
+
 }

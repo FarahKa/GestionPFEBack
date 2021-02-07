@@ -1,4 +1,3 @@
-import { csvFileFilter, editFileName } from './../../../utils/file-upload.utils';
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Etudiant } from 'src/entities/etudiant.entity';
@@ -51,14 +50,5 @@ export class EtudiantController {
         return this.etudiantService.get_etudiant_by_soutenance_id(SoutenanceId);
     }
 
-    @Post("import")
-    @UseInterceptors(FilesInterceptor("files[]", 100, 
-        {
-            dest: './uploads',
-            fileFilter: csvFileFilter
-        }
-    ) )
-    importEtudiants(@UploadedFiles() files) {
-       return this.etudiantService.importEtudiants(files);
-    }
+  
 }
