@@ -1,5 +1,5 @@
 import { CreateUserDto } from './../../../auth/dto/createUser.dto';
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 /* eslint-disable prefer-const */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,12 +27,10 @@ export class EtudiantService {
 
 
     async get_etudiant_by_cin(cin: string) {
-        const relations = ["year","user"]
+        const relations = ["year","cin"]
         return await this.etudiantRepository.findOne({
             where: { cin: cin },
             relations: relations
-        }).then((etudiant) => {
-            return etudiant
         });
     }
 

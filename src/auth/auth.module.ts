@@ -1,3 +1,4 @@
+//import { JwtStrategy } from './jwt.strategy';
 import { AdminModule } from './../admin/admin.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './../entities/user.entity';
@@ -17,10 +18,11 @@ import { EtudiantsModule } from 'src/etudiants/etudiants.module';
         secret: 'secret12356789'
     }),
     AdminModule,
-    EtudiantsModule
-    
+    EtudiantsModule,
     ],
-    providers: [UserService, AuthService],
+    providers: [UserService, AuthService,
+        //JwtStrategy
+    ],
     controllers: [AuthController, UserController],
     exports:[UserService,AuthService]
 })

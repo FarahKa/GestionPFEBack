@@ -51,6 +51,7 @@ export class AuthService {
              case Role.Student : {
                 await this.etudiantService.get_etudiant_by_cin(userData.cin).then(
                     (student)=>{
+                       console.log(student);
                        primary.firstname=student.firstname,
                        primary.lastname=student.lastname,
                        primary.phoneNumber=student.phoneNumber,

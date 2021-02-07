@@ -21,10 +21,7 @@ export class Etudiant extends Timestamp {
 
 
   @PrimaryColumn()
-  @OneToOne(() => User,
-  {
-    eager: true
-  })
+  @OneToOne(() => User,{eager: true})
   @JoinColumn({ name: "cin" })
   cin: string;
 
