@@ -34,8 +34,8 @@ export class SessionService {
       })
   }
 
-  findOne(id: string): Promise<Session> {
-    return this.sessionRepository.findOne(id);
+  findOne(id: number): Promise<Session> {
+    return this.sessionRepository.findOne({id: id});
   }
 
   async remove(id: string): Promise<void> {
