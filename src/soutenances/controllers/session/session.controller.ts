@@ -29,4 +29,9 @@ export class SessionController {
     getPresident(@Param('idSession', new ParseIntPipe()) idS) : Promise<Enseignant>{
      return this.sessionService.getPresident(idS);   
     }
+
+    @Get(":idSession")
+    getSessionById(@Param('idSession', new ParseIntPipe()) id) {
+        return this.sessionService.findOne(id);
+    }
 }

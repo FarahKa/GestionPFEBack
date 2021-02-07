@@ -1,14 +1,18 @@
 import { CreateUserDto } from './../../../auth/dto/createUser.dto';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+/* eslint-disable prefer-const */
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AnneeScolaire } from 'src/entities/annee-scolaire.entity';
 import { Etudiant } from 'src/entities/etudiant.entity';
 import { Soutenance } from 'src/entities/soutenance.entity';
+import { User } from 'src/entities/user.entity';
 import { FiliereEnum } from 'src/enums/filere.enum';
 import { CreateEtudiantDto } from 'src/etudiants/dto/createEtudiantDto';
 import { Repository } from 'typeorm';
 @Injectable()
 export class EtudiantService {
+
     constructor(
 
         @InjectRepository(Etudiant)
@@ -21,24 +25,40 @@ export class EtudiantService {
         private AnneeScolaireRepository: Repository<AnneeScolaire>,
     ) { }
 
-    async get_etudiant_by_id(student_id_number: number): Promise<Etudiant> {
 
-        const etudiant = await this.etudiantRepository.findOne({ student_id_number: student_id_number });
-        return etudiant;
-
+    async get_etudiant_by_cin(cin: string) {
+        const relations = ["year","user"]
+        return await this.etudiantRepository.findOne({
+            where: { cin: cin },
+            relations: relations
+        }).then((etudiant) => {
+            return etudiant
+        });
     }
-    async get_etudiant_by_cin(cin: string): Promise<Etudiant> {
-        return await this.etudiantRepository.findOne({ cin: cin });
+
+
+    async get_etudiant_by_id(student_id_number: number): Promise<Etudiant> {
+        const relations = ["year"]
+        return await this.etudiantRepository.findOne({
+            where: { student_id_number: student_id_number },
+            relations: relations
+        }).then((etudiant) => {
+            return etudiant
+        });
+
     }
 
     async create_etudiant(etudiant: CreateEtudiantDto) {
+        /*let year = new AnneeScolaireModel(etudiant.year);
+        let newEtudiant = new EtudiantModel(etudiant.cin, etudiant.firstname,
+            etudiant.lastname,etudiant.email,etudiant.phoneNumber, year, etudiant.student_id_number, etudiant.filiere);
+        */
         const newEtudiant = this.etudiantRepository.create();
-        let annee = await this.AnneeScolaireRepository.findOne({ year: etudiant.year });
+        const annee = await this.AnneeScolaireRepository.findOne({ year: etudiant.year });
         newEtudiant.year = annee;
         newEtudiant.cin = etudiant.cin;
         newEtudiant.firstname = etudiant.firstname;
         newEtudiant.lastname = etudiant.lastname;
-        //newEtudiant.email = etudiant.email;
         newEtudiant.phoneNumber = etudiant.phoneNumber;
         newEtudiant.student_id_number = etudiant.student_id_number;
         newEtudiant.filiere = etudiant.filiere;
@@ -46,12 +66,16 @@ export class EtudiantService {
     }
 
     async update_etudiant(student_id_number: number, idSoutenance: number): Promise<Etudiant> {
-        let etudiant = await this.etudiantRepository.findOne({
-            student_id_number: student_id_number
-        });
-        let soutenance = await this.soutenanceRepository.findOne({ id: idSoutenance });
+        const soutenance = await this.soutenanceRepository.findOne(idSoutenance);
+        const etudiant = await this.get_etudiant_by_id(student_id_number);
         etudiant.soutenance = soutenance;
-        return this.etudiantRepository.save(etudiant);
+        return await this.etudiantRepository.save(etudiant);
+    }
+
+    async update_etudiant_given_soutenance(student_id_number: number, soutenance: Soutenance): Promise<Etudiant> {
+        const etudiant = await this.get_etudiant_by_id(student_id_number);
+        etudiant.soutenance = soutenance;
+        return await this.etudiantRepository.save(etudiant);
     }
 
     async delete_etudiant_by_id(student_id_number: number): Promise<void> {

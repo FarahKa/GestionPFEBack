@@ -19,8 +19,12 @@ import { FiliereEnum } from '../enums/filere.enum'
 @Index(["cin", "year"], { unique: true })
 export class Etudiant extends Timestamp {
 
-  //@PrimaryColumn()
-  @OneToOne(() => User)
+
+  @PrimaryColumn()
+  @OneToOne(() => User,
+  {
+    eager: true
+  })
   @JoinColumn({ name: "cin" })
   cin: string;
 
@@ -33,6 +37,8 @@ export class Etudiant extends Timestamp {
   @Column()
     phoneNumber: number;
 
+    
+  @PrimaryColumn()
   @ManyToOne(() => AnneeScolaire,
     year => year.year,
     {
@@ -56,7 +62,7 @@ export class Etudiant extends Timestamp {
   @JoinColumn({ name: "pfeId" })
   pfe: PFE;*/
 
-  @OneToOne(() => Soutenance)
+  @OneToOne(() => Soutenance, {eager: true})
   @JoinColumn({ name: "soutenanceId" })
   soutenance: Soutenance;
 

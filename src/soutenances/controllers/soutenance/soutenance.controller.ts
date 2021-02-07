@@ -38,6 +38,10 @@ export class SoutenanceController {
         console.warn("in controller")
         return this.soutenanceService.assignEncadrant(idSoutenance, idEnseignant);
     }
+    @Get("soutenanceByStudentId/:studentId")
+    getSoutenanceByStudentId(@Param('studentId', new ParseIntPipe()) studentId: number):Promise<Soutenance> {
+        return this.soutenanceService.getSoutenanceByStudentId(studentId);
+    }
 
     @Post("patchSoutenance/:idSoutenance")
     patchSoutenance(@Param('idSoutenance', new ParseIntPipe()) idSoutenance : number, @Body() soutenance : PatchSoutenanceDto): Promise<Soutenance>{
@@ -53,5 +57,10 @@ export class SoutenanceController {
     @Get("jury/:idSoutenance")
     getJury(@Param('idSoutenance', new ParseIntPipe()) idSoutenance){
         return this.soutenanceService.getJury(idSoutenance)
+    }
+
+    @Get("soutenancesByFiliere")
+    getSoutenancesByFiliere(){
+        return this.soutenanceService.getSoutenancesByFiliere()
     }
 }

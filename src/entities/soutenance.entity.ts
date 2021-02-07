@@ -18,17 +18,18 @@ import { Session } from './session.entity';
 
     @Column({
         type: 'timestamp',
+        nullable: true,
       })
     date: Date;
 
-    @ManyToOne(() => Session, session => session.soutenances)
+    @ManyToOne(() => Session, session => session.soutenances,{eager: true})
     @JoinColumn({ name: "sessionId" })
     session : Session;
 
-    @OneToOne(() => Etudiant, etudiant => etudiant.soutenance)
+    @OneToOne(() => Etudiant , etudiant => etudiant.soutenance)
     etudiant : Etudiant;
 
-    @OneToOne(() => PFE)
+    @OneToOne(() => PFE, {eager: true})
     @JoinColumn({ name: "pfeId" })
     pfe: PFE;
 

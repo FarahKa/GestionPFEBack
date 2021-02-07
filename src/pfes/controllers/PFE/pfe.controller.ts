@@ -1,101 +1,96 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { PFE } from 'src/entities/pfe.entity';
 import { SearchPFEsDto } from 'src/pfes/dto/search_pfes.dto';
 import { ValidateInvalidateSubjectDto } from 'src/pfes/dto/validate-invalidate_subject.dto';
 import { AffectSubjectToMentorDto } from 'src/pfes/dto/affect_sub_mentor.dto';
 import { PfeService } from 'src/pfes/services/pfe/pfe.service';
 import { ParseIntPipe } from '@nestjs/common';
+import { CreatePFEDto } from 'src/pfes/dto/create_pfe.dto';
+import { identity } from 'rxjs';
+import { UpdatePFEDto } from 'src/pfes/dto/update_pfe.dto';
+import { Soutenance } from 'src/entities/soutenance.entity';
 
 @Controller('pfe')
 export class PfeController {
 
     /** 
-     * IM REDOING THIS WHOLE THING TO MAKE IT JUST PULL ONCE FROM THE DB AND THE FILTERING WILL BE
-     * DONE FL FRONT 
-     * SO ALL THIS CLASS WILL DO IS GET ML SERVICE E NECESSARY JOINTS
+     * if you need anything 9oulouli eni w ill do it 
+     * dont do it yourselves
+     * 
+     * 
+     * 
+     * ne9esni add w remove mentor to pfe 
      */
 
     constructor(private pfeService: PfeService) { }
 
-    @Get("id")
-    async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
-        if (body.pfe_id)
-            return await this.pfeService.get_PFE_by_id(body.pfe_id)
-        return undefined
+    // create an empty pfe along with an empty soutenance
+    @Post("create")
+    async postPFE(@Body() body: CreatePFEDto): Promise<PFE | void | undefined> {
+        return await this.pfeService.createPFE(body)
     }
 
-    @Get("all")
+    @Put("update")
+    async updatePFE(@Body() body: UpdatePFEDto){
+        return await this.pfeService.updatePFE(body)
+    }
+
+    @Get("/getPFE/:id")
+    async getPFEById(@Param('id', new ParseIntPipe()) id): Promise<PFE | undefined> {
+        console.log(id)
+        return await this.pfeService.getPFEByID(id)
+    }
+
+    // get all pfes along with teacher and student data
+    @Get("/all")
     async getPFEs() {
         return await this.pfeService.get_PFEs_by_year_with_students_teachers(undefined)
     }
 
-    @Get(":year/all")
+    // get all pfes of a specific year along with teacher and student data 
+    @Get("/all/:year")
     async getPFEsByYear(@Param('year', new ParseIntPipe()) year) {
         console.log(year)
         return await this.pfeService.get_PFEs_by_year_with_students_teachers(year)
     }
-/*
-    @Get("pfes/etudiants")
-    async getPFEById(body: ValidateInvalidateSubjectDto): Promise<PFE | undefined> {
-        if (body.pfe_id)
-            return await this.pfeService.getPFEById(body.pfe_id)
-        return undefined
+    
+    @Post("validate/:pfe_id")
+    async validateSubject(@Param('pfe_id', new ParseIntPipe()) pfe_id) {
+            return await this.pfeService.validateOrInvalidateSubject(pfe_id, true)
     }
 
-*/
-    @Post("validate")
-    async validateSubject(@Body() body: ValidateInvalidateSubjectDto) {
-        if (body.pfe_id)
-            return await this.pfeService.validate_or_invalidate_subject(body.pfe_id, true)
-        return undefined
+    @Post("invalidate/:pfe_id")
+    async invalidateSubject(@Param('pfe_id', new ParseIntPipe()) pfe_id) {
+            return await this.pfeService.validateOrInvalidateSubject(pfe_id, false)
     }
 
-    @Post("invalidate")
-    async invalidateSubject(@Body() body: ValidateInvalidateSubjectDto) {
-        if (body.pfe_id)
-            return await this.pfeService.validate_or_invalidate_subject(body.pfe_id, false)
-        return undefined
+    @Get("student/:student_id")
+    async getPFEsByStudentID(@Param("student_id", new ParseIntPipe()) student_id){
+        return await this.pfeService.getPFEsByStudentID(student_id)
     }
-/*
-    @Get("pfes_by_subject_hosting_enterprise_year")
-    async getPFEsBySubjectHostOrYear(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE>  
-        return await this.pfeService.getPFEsBySubjectHostingEnterpriseOrYear(body.subject, body.hosting_enterprise, body.uni_year)
-    }
-*/
-    @Get("pfes_by_student_id_year/:student_id")
-    async getPFEsByStudentId(@Param('student_id', new ParseIntPipe()) student_id): Promise<PFE | undefined> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(student_id);
+
+    // maybe add more security bch maynajjamch a teacher ychouf e stuff mt3 another teacher ?
+    @Get("encadrant/:year/:encadrant_id")
+    async getPFEsByEncadrantID(@Param('year', new ParseIntPipe()) year, @Param("encadrant_id", new ParseIntPipe()) encadrant_id){
+        return await this.pfeService.getPFEsByMentor(year, encadrant_id)
     }
 /*
-    @Get("pfes_by_mentor_id_subject_host_ent_year")
-    async getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(@Body() body: SearchPFEsDto): Promise<PFE[] | undefined> { //: Promise<PFE> 
-        if (body.mentor_id)
-            return await this.pfeService.getPFEsByMentorANDSubjectHostEntANDYearANDFiliere(body.mentor_id, body.subject, body.hosting_enterprise, body.uni_year, body.filiere)
-        return undefined
+        @Post("affect_subject_to_mentor")
+        async affectSubjectToMentor(@Body() body: AffectSubjectToMentorDto){
+            if( body.mentor_id && body.pfe_id )
+                return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
+            return undefined
+        }*/
+
+
+    //farah: this gets students li mezzelou ma3andhomch pfe
+    @Get("studentsNoPFE")
+    async getStudentsNoPFE(){
+        console.warn("here")
+        return await this.pfeService.getStudentsNoPFE()
     }
-
-    @Get("pfes_by_year")
-    async getPFEsByYear(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
-
-    }
-
-    @Get("pfes_by_filiere")
-    async getPFEsByFiliere(@Body() body: SearchPFEsDto): Promise<PFE[]> { //: Promise<PFE> 
-        return await this.pfeService.getPFEsByStudentIDOrYear(undefined, body.uni_year)
-
-    }
-
-    @Post("affect_subject_to_mentor")
-    async affectSubjectToMentor(@Body() body: AffectSubjectToMentorDto){
-        if( body.mentor_id && body.pfe_id )
-            return await this.pfeService.affectSubjectToMentor(body.mentor_id, body.pfe_id)
-        return undefined
-    }*/
 }
 
 /*
-create pfe
-delete pfe
 update pfe
 */
